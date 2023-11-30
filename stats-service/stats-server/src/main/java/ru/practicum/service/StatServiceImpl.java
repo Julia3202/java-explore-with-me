@@ -34,12 +34,15 @@ public class StatServiceImpl implements StatService {
         if (unique) {
             if (uris.isEmpty()) {
                 return hitsRepository.getUniqueStat(start, end);
+            } else {
+                return hitsRepository.getUniqueStatWithUris(start, end, uris);
             }
-            return hitsRepository.getUniqueStatWithUris(start, end, uris);
+        } else {
+            if (uris.isEmpty()) {
+                return hitsRepository.getStat(start, end);
+            } else {
+                return hitsRepository.getStatWithUris(start, end, uris);
+            }
         }
-        if (uris.isEmpty()) {
-            return hitsRepository.getStat(start, end);
-        }
-        return hitsRepository.getStatWithUris(start, end, uris);
     }
 }
