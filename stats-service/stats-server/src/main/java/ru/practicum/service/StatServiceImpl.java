@@ -36,11 +36,10 @@ public class StatServiceImpl implements StatService {
                 return hitsRepository.getUniqueStat(start, end);
             }
             return hitsRepository.getUniqueStatWithUris(start, end, uris);
-        } else {
-            if (uris.isEmpty()) {
-                return hitsRepository.getStat(start, end);
-            }
-            return hitsRepository.getStatWithUris(start, end, uris);
         }
+        if (uris.isEmpty()) {
+            return hitsRepository.getStat(start, end);
+        }
+        return hitsRepository.getStatWithUris(start, end, uris);
     }
 }

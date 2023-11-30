@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface HitsRepository extends JpaRepository<EndpointHit, Long> {
     @Query("select new ru.practicum.ViewStatsDto(e.app, e.uri, count(distinct e.ip)) from EndpointHit e " +
-            "where e.timestamp >= ?1 and e.timestamp <= ?2 group by e.app, e.uri order by count(e.ip) desc")
+            "where e.timestamp between ?1 and ?2 group by e.app, e.uri order by count(e.ip) desc")
     List<ViewStatsDto> getUniqueStat(LocalDateTime start, LocalDateTime end);
 
     @Query("select new ru.practicum.ViewStatsDto(e.app, e.uri, count(distinct e.ip)) from EndpointHit as e " +
