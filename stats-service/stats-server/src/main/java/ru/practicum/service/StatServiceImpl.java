@@ -2,6 +2,7 @@ package ru.practicum.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import ru.practicum.EndpointHitDto;
 import ru.practicum.ViewStatsDto;
 import ru.practicum.dao.HitsRepository;
@@ -31,18 +32,13 @@ public class StatServiceImpl implements StatService {
         LocalDateTime start = LocalDateTime.parse(startTime, DATE_TIME_FORMATTER);
         LocalDateTime end = LocalDateTime.parse(endTime, DATE_TIME_FORMATTER);
         timeValidator.validTime(start, end);
-        if (unique) {
-            if (uris.isEmpty()) {
-                return hitsRepository.getUniqueStat(start, end);
-            } else {
-                return hitsRepository.getUniqueStatWithUris(start, end, uris);
-            }
-        } else {
-            if (uris.isEmpty()) {
-                return hitsRepository.getStat(start, end);
-            } else {
-                return hitsRepository.getStatWithUris(start, end, uris);
-            }
-        }
+        List<ViewStatsDto> veiwStatsDtoList = unique ?
+                CollectionUtils.isEmpty(uris) ?
+                        hitsRepository.getUniqueStat(start, end) :
+                        hitsRepository.getUniqueStatWithUris(start, end, uris) :
+                CollectionUtils.isEmpty(uris) ?
+                        hitsRepository.getStat(start, end) :
+                        hitsRepository.getStatWithUris(start, end, uris);
+        return veiwStatsDtoList;
     }
 }
