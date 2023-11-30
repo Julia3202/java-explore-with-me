@@ -10,7 +10,6 @@ import ru.practicum.model.EndpointHit;
 import ru.practicum.model.TimeValidator;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static ru.practicum.model.Constants.DATE_TIME_FORMATTER;
@@ -32,18 +31,16 @@ public class StatServiceImpl implements StatService {
         LocalDateTime start = LocalDateTime.parse(startTime, DATE_TIME_FORMATTER);
         LocalDateTime end = LocalDateTime.parse(endTime, DATE_TIME_FORMATTER);
         timeValidator.validTime(start, end);
-        List<ViewStatsDto> viewStatsDtoList = new ArrayList<>();
         if (unique) {
             if (uris.isEmpty()) {
-                hitsRepository.getUniqueStat(start, end);
+                return hitsRepository.getUniqueStat(start, end);
             }
-            hitsRepository.getUniqueStatWithUris(start, end, uris);
+            return hitsRepository.getUniqueStatWithUris(start, end, uris);
         } else {
             if (uris.isEmpty()) {
-                hitsRepository.getStat(start, end);
+                return hitsRepository.getStat(start, end);
             }
-            hitsRepository.getStatWithUris(start, end, uris);
+            return hitsRepository.getStatWithUris(start, end, uris);
         }
-        return null;
     }
 }
