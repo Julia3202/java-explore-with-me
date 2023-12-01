@@ -34,11 +34,11 @@ public class StatServiceImpl implements StatService {
         timeValidator.validTime(start, end);
         List<ViewStatsDto> veiwStatsDtoList = unique ?
                 CollectionUtils.isEmpty(uris) ?
-                        hitsRepository.getUniqueStat(start, end) :
-                        hitsRepository.getUniqueStatWithUris(start, end, uris) :
+                        hitsRepository.findDistinctByTimestampBetween(start, end) :
+                        hitsRepository.findDistinctByTimestampBetweenAndUri(start, end, uris) :
                 CollectionUtils.isEmpty(uris) ?
-                        hitsRepository.getStat(start, end) :
-                        hitsRepository.getStatWithUris(start, end, uris);
+                        hitsRepository.findAllByTimestampBetween(start, end) :
+                        hitsRepository.findAllByTimestampBetweenAndUri(start, end, uris);
         return veiwStatsDtoList;
     }
 }
