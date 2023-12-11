@@ -1,8 +1,15 @@
 package ru.practicum.event.dto;
 
+import lombok.*;
 import ru.practicum.location.dto.LocationDto;
+import ru.practicum.request.model.StateAction;
 
-public class EventUpdate {
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
+@ToString
+public class EventAdminRequestUpdate {
     private String annotation;
     private Long category;
     private String description;
@@ -12,5 +19,6 @@ public class EventUpdate {
     private Integer participantLimit;
 
     private Boolean requestModeration;
+    private StateAction stateAction;
     private String title;
 }

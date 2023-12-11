@@ -2,37 +2,53 @@ package ru.practicum.client;
 
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import ru.practicum.EndpointHitDto;
+import ru.practicum.ViewStatsDto;
 
+import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
-public class StatClient extends BaseClient {
+@Component
+public class StatClient {
 
-    public StatClient(@Value("http://server:9090") String serverUrl, RestTemplateBuilder builder) {
-        super(
-                builder
-                        .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))
-                        .requestFactory(HttpComponentsClientHttpRequestFactory::new)
-                        .build()
-        );
+    private final String serverUrl;
+
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    public StatClient(@Value("${stats-server.url}") String serverUrl) {
+        this.serverUrl = serverUrl;
     }
 
-    public ResponseEntity<Object> createHit(EndpointHitDto endpointHitDto) {
-        return post("/hit", endpointHitDto);
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    public EndpointHitDto postHit(EndpointHitDto hit) {
+        HttpEntity<EndpointHitDto> requestEntity = new HttpEntity<>(hit);
+        return restTemplate.exchange(serverUrl + "/hit", HttpMethod.POST, requestEntity, EndpointHitDto.class).getBody();
     }
 
-    public ResponseEntity<Object> getStats(String start, String end, List<String> uris, Boolean unique) {
-        Map<String, Object> parameters = Map.of(
-                "start", start,
-                "end", end,
-                "uris", uris,
-                "unique", unique
-        );
-        return get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", parameters);
+    public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> urisList, Boolean unique) {
+        String startDayTime = start.format(formatter);
+        String endDayTime = end.format(formatter);
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(serverUrl)
+                .path("/stats")
+                .queryParam("start", startDayTime)
+                .queryParam("end", endDayTime)
+                .queryParam("uris", urisList)
+                .queryParam("unique", unique);
+
+        URI uriString = uriComponentsBuilder.build().toUri();
+
+        ViewStatsDto[] response = restTemplate.getForObject(uriString, ViewStatsDto[].class);
+
+        return response != null ? List.of(response) : Collections.emptyList();
     }
 }

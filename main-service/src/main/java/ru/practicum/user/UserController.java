@@ -29,9 +29,9 @@ public class UserController {
         return userService.getUser(ids, from, size);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
-        userService.delete(id);
+    public void delete(@PathVariable Long userId) {
+        userService.delete(userId);
     }
 }

@@ -1,19 +1,20 @@
 package ru.practicum.event.dto;
 
-
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import ru.practicum.location.dto.LocationDto;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-@ToString
-public class NewEventDto {
+public class UpdateEvent {
+
     private String annotation;
     private Long category;
     private String description;
-    private String eventDate;
     private LocationDto location;
     private Boolean paid;
     private Integer participantLimit;

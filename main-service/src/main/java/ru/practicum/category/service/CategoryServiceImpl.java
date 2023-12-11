@@ -1,6 +1,5 @@
 package ru.practicum.category.service;
 
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -11,7 +10,7 @@ import ru.practicum.category.dto.CategoryMapper;
 import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.model.Category;
 import ru.practicum.validator.CategoryValidator;
-import ru.practicum.validator.CategoryValidatorService;
+import ru.practicum.validator.ValidatorService;
 import ru.practicum.validator.ValidatorSizeAndFrom;
 
 import java.util.List;
@@ -21,14 +20,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
-    private final CategoryValidatorService categoryValidatorService;
+    private final ValidatorService validatorService;
     private final CategoryValidator categoryValidator = new CategoryValidator();
     private final ValidatorSizeAndFrom validatorSizeAndFrom = new ValidatorSizeAndFrom();
 
     @Override
     public CategoryDto create(NewCategoryDto newCategoryDto) {
         categoryValidator.validName(newCategoryDto);
-        categoryValidatorService.uniqueName(newCategoryDto);
+        validatorService.uniqueName(newCategoryDto);
         Category category = CategoryMapper.toCategory(newCategoryDto);
         categoryRepository.save(category);
         return CategoryMapper.toCategoryDto(category);
@@ -36,7 +35,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto update(Long id, CategoryDto categoryDto) {
-        Category category = categoryValidatorService.existCategoryById(id);
+        Category category = validatorService.existCategoryById(id);
         Category categoryFromDto = CategoryMapper.toCategory(categoryDto, category);
         categoryFromDto.setId(id);
         categoryRepository.save(categoryFromDto);
@@ -45,7 +44,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto getCategory(Long id) {
-        Category category = categoryValidatorService.existCategoryById(id);
+        Category category = validatorService.existCategoryById(id);
         return CategoryMapper.toCategoryDto(category);
     }
 
@@ -61,7 +60,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void delete(Long id) {
-        Category category = categoryValidatorService.existCategoryById(id);
+        Category category = validatorService.existCategoryById(id);
         categoryRepository.delete(category);
     }
 }

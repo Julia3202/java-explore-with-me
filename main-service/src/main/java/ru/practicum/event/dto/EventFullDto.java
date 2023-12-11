@@ -2,10 +2,8 @@ package ru.practicum.event.dto;
 
 import lombok.*;
 import ru.practicum.category.dto.CategoryDto;
-import ru.practicum.location.model.Location;
+import ru.practicum.location.dto.LocationDto;
 import ru.practicum.user.dto.UserShortDto;
-
-import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,14 +14,14 @@ public class EventFullDto {
     private Long id;
     private String annotation;
     private CategoryDto category;
-    private LocalDateTime createdOn;
+    private String createdOn;
     private String description;
-    private LocalDateTime eventDate;
+    private String eventDate;
     private UserShortDto initiator;
-    private Location location;
+    private LocationDto location;
     private Boolean paid;
     private Integer participantLimit;
-    private LocalDateTime publishedOn;
+    private String publishedOn;
     private Boolean requestModeration;
     private String state;
     private String title;

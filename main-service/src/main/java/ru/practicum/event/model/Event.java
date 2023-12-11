@@ -8,13 +8,13 @@ import ru.practicum.user.model.User;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Table(name = "events")
-@Entity
+@AllArgsConstructor
 @NoArgsConstructor
+@Entity
+@Table(name = "events")
 @Getter
 @Setter
-@ToString
-@AllArgsConstructor
+@Builder
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

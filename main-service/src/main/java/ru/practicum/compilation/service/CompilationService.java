@@ -7,6 +7,7 @@ import ru.practicum.compilation.dto.UpdateCompilationDto;
 import java.util.List;
 
 public interface CompilationService {
+
     CompilationDto create(NewCompilationDto newCompilationDto);
 
     CompilationDto update(Long id, UpdateCompilationDto updateCompilationDto);

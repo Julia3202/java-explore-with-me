@@ -29,6 +29,7 @@
         <stats.dto.version>0.0.1-SNAPSHOT</stats.dto.version>
         <stats.client.version>0.0.1-SNAPSHOT</stats.client.version>
         <commons-lang3.version>3.13.0</commons-lang3.version>
+        <querydsl.version>5.0.0</querydsl.version>
     </properties>
 
     <dependencyManagement>
@@ -52,6 +53,11 @@
                 <groupId>ru.practicum</groupId>
                 <artifactId>stats-client</artifactId>
                 <version>${stats.client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.querydsl</groupId>
+                <artifactId>querydsl-jpa</artifactId>
+                <version>${querydsl.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -99,6 +105,7 @@
     <build>
         <pluginManagement>
             <plugins>
+
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
