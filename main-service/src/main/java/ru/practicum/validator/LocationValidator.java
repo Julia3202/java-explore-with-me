@@ -16,7 +16,7 @@ public class LocationValidator {
         }
     }
 
-    public void validLocation(Double lat, Double lon){
+    public void validLocation(Double lat, Double lon) {
         validateLat(lat);
         validateLon(lon);
     }
