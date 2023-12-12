@@ -9,12 +9,12 @@ import ru.practicum.event.model.Event;
 import javax.persistence.*;
 import java.util.List;
 
-@Getter
-@Entity
-@Setter
+@Table(name = "compilations")
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "compilations")
+@Getter
+@Setter
+@Entity
 public class Compilation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

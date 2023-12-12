@@ -27,7 +27,7 @@ public class Request {
     private LocalDateTime created;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "event_id")
+    @JoinColumn(name = "event_id")
     private Event event;
 
     @ManyToOne(fetch = FetchType.LAZY)
