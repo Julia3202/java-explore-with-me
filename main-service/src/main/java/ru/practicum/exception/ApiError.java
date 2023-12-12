@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class ApiError {
-    private String error;
+    private StackTraceElement[] error;
     private String message;
     private String reason;
     private String status;
