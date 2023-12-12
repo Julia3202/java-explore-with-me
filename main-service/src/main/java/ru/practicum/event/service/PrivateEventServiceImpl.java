@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.model.Category;
 import ru.practicum.event.dao.EventRepository;
 import ru.practicum.event.dto.*;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PrivateEventServiceImpl implements PrivateEventService {
     private final EventRepository eventRepository;
     private final ValidatorService validatorService;
@@ -139,6 +141,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<EventShortDto> getPrivateEvents(Long userId, Integer from, Integer size) {
         validatorService.existUserById(userId);
         Pageable pageable = PageRequest.of(from / size, size);
@@ -147,6 +150,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public EventFullDto getOwnerEvent(Long userId, Long eventId) {
         Event event = validatorService.existEventById(eventId);
         User user = validatorService.existUserById(userId);
@@ -157,6 +161,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ParticipationRequestDto> getRequestForOwnerEvent(Long userId, Long eventId) {
         Event event = validatorService.existEventById(eventId);
         User user = validatorService.existUserById(userId);

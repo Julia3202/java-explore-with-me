@@ -18,7 +18,6 @@ import ru.practicum.event.model.QEvent;
 import ru.practicum.event.model.State;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.validator.DateValidator;
-import ru.practicum.validator.LocationValidator;
 import ru.practicum.validator.ValidatorService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,7 +36,6 @@ public class PublicEventServiceImpl implements PublicEventService {
 
     private final StatClient statClient;
     private final DateValidator dateValidator = new DateValidator();
-    private final LocationValidator locationValidator = new LocationValidator();
 
 
     @Override

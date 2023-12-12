@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import ru.practicum.category.model.Category;
 import ru.practicum.event.dao.EventRepository;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AdminEventServiceImpl implements AdminEventService {
     private final EventRepository eventRepository;
 
@@ -40,6 +42,7 @@ public class AdminEventServiceImpl implements AdminEventService {
     private final EventValidator eventValidator = new EventValidator();
 
     @Override
+    @Transactional(readOnly = true)
     public List<EventFullDto> getAdminFullEvent(List<Long> users, List<String> states, List<Long> categories,
                                                 String rangeStart, String rangeEnd, Integer from, Integer size) {
         LocalDateTime start = dateValidator.toTime(rangeStart);

@@ -2,6 +2,7 @@ package ru.practicum.request;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.request.service.RequestService;
@@ -11,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/users/{userId}/request")
 @RequiredArgsConstructor
+@Transactional
 public class PrivateRequestController {
 
     private final RequestService requestService;
@@ -29,6 +31,7 @@ public class PrivateRequestController {
     }
 
     @GetMapping
+    @Transactional(readOnly = true)
     public List<ParticipationRequestDto> getUsersParticipantsRequests(@PathVariable long userId) {
         return requestService.get(userId);
     }

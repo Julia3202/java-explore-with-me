@@ -2,6 +2,7 @@ package ru.practicum.request.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.event.model.Event;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.request.dao.RequestRepository;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RequestServiceImpl implements RequestService {
     private final RequestRepository requestRepository;
     private final ValidatorService validatorService;
@@ -62,6 +64,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ParticipationRequestDto> get(Long userId) {
         validatorService.existUserById(userId);
         return requestRepository.findAllByRequesterId(userId).stream()
