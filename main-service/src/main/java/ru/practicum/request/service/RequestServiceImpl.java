@@ -33,7 +33,7 @@ public class RequestServiceImpl implements RequestService {
         Event event = validatorService.existEventById(eventId);
         Optional<Request> requestList = requestRepository.findAllByRequesterIdAndEventId(userId, eventId);
         if (requestList.isPresent()) {
-            throw new ConflictException("Пользователь с email- " +user.getEmail() + " уже зарегистрирован.");
+            throw new ConflictException("Пользователь с email- " + user.getEmail() + " уже зарегистрирован.");
         }
         requestValidator.validRequester(userId, event);
         if (event.getPublishedOn() == null) {
