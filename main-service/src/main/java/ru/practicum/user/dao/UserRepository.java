@@ -12,5 +12,5 @@ import java.util.Set;
 public interface UserRepository extends JpaRepository<User, Long> {
     Page<User> findAllByIdIn(Pageable page, Set<Long> ids);
 
-    Optional<Object> findByEmail(String email);
+    Optional<Object> findByName(String email);
 }

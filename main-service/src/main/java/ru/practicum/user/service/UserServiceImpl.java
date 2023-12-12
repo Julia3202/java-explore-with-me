@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto saveUser(NewUserDto newUserDto) {
         userValidator.validate(newUserDto);
-        userRepository.findByEmail(newUserDto.getEmail())
+        userRepository.findByName(newUserDto.getEmail())
                 .orElseThrow(() -> new ConflictException("Пользователь с email- " + newUserDto.getEmail() +
                         " уже зарегистрирован."));
         User user = userRepository.save(UserMapper.toUser(newUserDto));

@@ -20,7 +20,6 @@ public class ErrorHandler {
         log.error("Error 500: {}", "Произошла внутренняя ошибка сервера.");
         String reason = "Произошла внутренняя ошибка сервера.";
         return ApiError.builder()
-                .error(e.getStackTrace())
                 .message(e.getMessage())
                 .reason(reason)
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.name())
@@ -33,7 +32,6 @@ public class ErrorHandler {
     public ApiError handleNotFoundException(final NotFoundException e) {
         String reason = "Искомый объект не найден.";
         return ApiError.builder()
-                .error(e.getStackTrace())
                 .message(e.getMessage())
                 .reason(reason)
                 .status(HttpStatus.NOT_FOUND.name())
@@ -46,7 +44,6 @@ public class ErrorHandler {
     public ApiError handleBadRequest(final ValidationException e) {
         String reason = "Некорректный запрос.";
         return ApiError.builder()
-                .error(e.getStackTrace())
                 .message(e.getMessage())
                 .reason(reason)
                 .status(HttpStatus.BAD_REQUEST.name())
@@ -59,7 +56,6 @@ public class ErrorHandler {
     public ApiError handleConflictException(final ConflictException e) {
         String reason = "Запрос кофликтует с текущим состоянием сервера.";
         return ApiError.builder()
-                .error(e.getStackTrace())
                 .message(e.getMessage())
                 .reason(reason)
                 .status(HttpStatus.CONFLICT.name())
