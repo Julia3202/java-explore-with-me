@@ -16,6 +16,7 @@ import ru.practicum.validator.ValidatorService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,11 +31,18 @@ public class RequestServiceImpl implements RequestService {
     public ParticipationRequestDto create(Long userId, Long eventId) {
         User user = validatorService.existUserById(userId);
         Event event = validatorService.existEventById(eventId);
-        List<Request> requestList = requestRepository.findAllByRequesterId(userId);
-        if (!requestList.isEmpty()) {
+        Optional<Request> requestList = requestRepository.findAllByRequesterIdAndEventId(userId, eventId);
+        if (requestList.isPresent()) {
             throw new ConflictException("Вы уже зарегистрированны на данное меропрятие.");
         }
         requestValidator.validRequester(userId, event);
+        if (event.getPublishedOn() == null) {
+            throw new ConflictException("Мероятие не зарегистрировано.");
+        }
+        Integer participantsNumber = requestRepository.countAllByStatusAndEventId(Status.CONFIRMED, eventId);
+        if (participantsNumber != null && participantsNumber >= event.getParticipantLimit() && event.getParticipantLimit() != 0) {
+            throw new ConflictException("На мероприятие с ID: " + eventId + ", уже зарегистрировано максимальное кол-во участников");
+        }
         Request request = new Request(null, LocalDateTime.now(), event, user, Status.PENDING);
         if (eventValidator.checkRestriction(event)) {
             request.setStatus(Status.CONFIRMED);

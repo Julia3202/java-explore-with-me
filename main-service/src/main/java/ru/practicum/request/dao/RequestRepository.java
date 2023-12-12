@@ -7,6 +7,7 @@ import ru.practicum.request.model.Request;
 import ru.practicum.request.model.Status;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface RequestRepository extends JpaRepository<Request, Long> {
@@ -24,4 +25,6 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
 
     @Query("update Request as r set r.status = ?1 where r.id in ?2")
     void requestStatusUpdate(Status status, List<Long> requestsIdsForConfirm);
+
+    Optional<Request> findAllByRequesterIdAndEventId(Long userId, Long eventId);
 }
