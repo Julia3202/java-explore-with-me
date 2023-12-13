@@ -25,7 +25,7 @@ public class UserController {
     @GetMapping
     public List<UserDto> getUser(@RequestParam(required = false, name = "ids") Set<Long> ids,
                                  @RequestParam(defaultValue = "0") Integer from,
-                                 @RequestParam(defaultValue = "20") Integer size) {
+                                 @RequestParam(defaultValue = "10") Integer size) {
         return userService.getUser(ids, from, size);
     }
 

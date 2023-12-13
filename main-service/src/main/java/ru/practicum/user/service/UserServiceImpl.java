@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
@@ -16,6 +15,7 @@ import ru.practicum.user.dto.UserMapper;
 import ru.practicum.user.model.User;
 import ru.practicum.validator.UserValidator;
 import ru.practicum.validator.ValidatorSizeAndFrom;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -32,10 +32,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto saveUser(NewUserDto newUserDto) {
         userValidator.validate(newUserDto);
-        userRepository.findByName(newUserDto.getEmail())
-                .orElseThrow(() -> new ConflictException("Пользователь с email- " + newUserDto.getEmail() +
-                        " уже зарегистрирован."));
-        User user = userRepository.save(UserMapper.toUser(newUserDto));
+        if(userRepository.findByName(newUserDto.getEmail()) != null) {
+                throw new ConflictException("Пользователь с email- " + newUserDto.getEmail() +
+                    " уже зарегистрирован.");
+        }
+        User user = userRepository.save(UserMapper.toNewUser(newUserDto));
         return UserMapper.toUserDto(user);
     }
 

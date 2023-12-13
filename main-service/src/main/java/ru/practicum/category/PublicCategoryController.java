@@ -20,7 +20,7 @@ public class PublicCategoryController {
 
     @GetMapping
     public List<CategoryDto> getListCategory(@RequestParam(defaultValue = "0") Integer from,
-                                             @RequestParam(defaultValue = "25") Integer size) {
+                                             @RequestParam(defaultValue = "10") Integer size) {
         return categoryService.getListCategories(from, size);
     }
 }

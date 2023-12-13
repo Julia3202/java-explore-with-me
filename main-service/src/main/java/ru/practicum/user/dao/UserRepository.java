@@ -6,11 +6,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.practicum.user.model.User;
 
-import java.util.Optional;
 import java.util.Set;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     Page<User> findAllByIdIn(Pageable page, Set<Long> ids);
 
-    Optional<Object> findByName(String email);
+    User findByName(String email);
 }
