@@ -1,6 +1,7 @@
 package ru.practicum.user.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ValidatorSizeAndFrom validatorSizeAndFrom = new ValidatorSizeAndFrom();
@@ -36,7 +38,9 @@ public class UserServiceImpl implements UserService {
             throw new ConflictException("Пользователь с email- " + newUserDto.getEmail() +
                     " уже зарегистрирован.");
         }
-        User user = userRepository.save(UserMapper.toNewUser(newUserDto));
+        User userFromDto = UserMapper.toNewUser(newUserDto);
+        User user = userRepository.save(userFromDto);
+        log.info("save user from BD");
         return UserMapper.toUserDto(user);
     }
 

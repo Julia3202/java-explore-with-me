@@ -1,6 +1,7 @@
 package ru.practicum.validator;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.category.dao.CategoryRepository;
 import ru.practicum.category.dto.NewCategoryDto;
@@ -18,6 +19,7 @@ import ru.practicum.user.model.User;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class ValidatorService {
     private final CategoryRepository categoryRepository;
     private final CompilationRepository compilationRepository;
@@ -26,11 +28,13 @@ public class ValidatorService {
     private final EventRepository eventRepository;
 
     public User existUserById(Long userId) {
+log.info("user");
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с ID- " + userId + " не найден."));
     }
 
     public Event existEventById(Long id) {
+        log.info("event");
         return eventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Событие с ID- " + id + " не найдено."));
     }

@@ -11,6 +11,7 @@ import ru.practicum.event.dto.*;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.State;
 import ru.practicum.exception.ConflictException;
+import ru.practicum.exception.ValidationException;
 import ru.practicum.location.dao.LocationRepository;
 import ru.practicum.location.dto.LocationMapper;
 import ru.practicum.location.model.Location;
@@ -20,12 +21,16 @@ import ru.practicum.request.dto.RequestMapper;
 import ru.practicum.request.model.Request;
 import ru.practicum.request.model.Status;
 import ru.practicum.user.model.User;
+import ru.practicum.validator.EventValidator;
 import ru.practicum.validator.LocationValidator;
 import ru.practicum.validator.ValidatorService;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static ru.practicum.validator.Constants.DATE_TIME_FORMATTER;
 
 @Service
 @RequiredArgsConstructor
@@ -36,15 +41,22 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     private final LocationRepository locationRepository;
     private final EventUtilService eventUtilService;
     private final RequestRepository requestRepository;
+
+    private final EventValidator eventValidator = new EventValidator();
     private final LocationValidator locationValidator = new LocationValidator();
 
     @Override
     public EventFullDto create(Long userId, NewEventDto newEventDto) {
+        eventValidator.checkForCreateEvent(newEventDto);
         User user = validatorService.existUserById(userId);
         Category category = validatorService.existCategoryById(newEventDto.getCategory());
         Location locations = LocationMapper.toLocation(newEventDto.getLocation());
         Location location = locationRepository.save(locations);
         Event event = EventMapper.toEvent(newEventDto, category, user, location);
+        LocalDateTime eventDateTime = LocalDateTime.parse(newEventDto.getEventDate(), DATE_TIME_FORMATTER);
+        if (eventDateTime.isAfter(LocalDateTime.now())) {
+            throw new ValidationException("Нельзя создавать событие с датой раньше сегодня.");
+        }
         eventRepository.save(event);
         return EventMapper.toEventFullDto(event, 0, 0L);
     }

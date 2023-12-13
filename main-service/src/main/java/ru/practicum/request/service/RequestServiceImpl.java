@@ -1,6 +1,7 @@
 package ru.practicum.request.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.event.model.Event;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class RequestServiceImpl implements RequestService {
     private final RequestRepository requestRepository;
     private final ValidatorService validatorService;
@@ -32,18 +34,24 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public ParticipationRequestDto create(Long userId, Long eventId) {
         User user = validatorService.existUserById(userId);
+        log.info("check user");
         Event event = validatorService.existEventById(eventId);
+        log.info("check event");
         Optional<Request> requestList = requestRepository.findAllByRequesterIdAndEventId(userId, eventId);
         if (requestList.isPresent()) {
             throw new ConflictException("Пользователь с email- " + user.getEmail() + " уже зарегистрирован.");
         }
-        requestValidator.validRequester(userId, event);
+        if (event.getInitiator().equals(user)) {
+            throw new ConflictException("Нельзя делать запрос на мероприятие, которое создали Вы сами.");
+        }
         if (event.getPublishedOn() == null) {
             throw new ConflictException("Мероятие не зарегистрировано.");
         }
         Integer participantsNumber = requestRepository.countAllByStatusAndEventId(Status.CONFIRMED, eventId);
-        if (participantsNumber != null && participantsNumber >= event.getParticipantLimit() && event.getParticipantLimit() != 0) {
-            throw new ConflictException("На мероприятие с ID: " + eventId + ", уже зарегистрировано максимальное кол-во участников");
+        if (participantsNumber != null && participantsNumber >= event.getParticipantLimit() &&
+                event.getParticipantLimit() != 0) {
+            throw new ConflictException("На мероприятие с ID: " + eventId + ", уже зарегистрировано" +
+                    " максимальное кол-во участников");
         }
         Request request = new Request(null, LocalDateTime.now(), event, user, Status.PENDING);
         if (eventValidator.checkRestriction(event)) {

@@ -7,7 +7,7 @@ import ru.practicum.user.model.User;
 
 public class RequestValidator {
     public void validRequester(Long userId, Event event) {
-        if (event.getInitiator().getId().equals(userId)) {
+        if (event.getInitiator().getId() == userId) {
             throw new ConflictException("Нельзя делать запрос на мероприятие, которое создали Вы сами.");
         }
     }
