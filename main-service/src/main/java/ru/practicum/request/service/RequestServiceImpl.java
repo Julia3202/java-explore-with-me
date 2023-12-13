@@ -33,7 +33,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public ParticipationRequestDto create(Long userId, Long eventId) {
         User user = validatorService.existUserById(userId);
-        if(eventId == null){
+        if (eventId == null) {
             throw new ValidationException("Не указан ID события.");
         }
         Event event = validatorService.existEventById(eventId);
