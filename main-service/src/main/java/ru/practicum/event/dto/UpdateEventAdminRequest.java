@@ -4,19 +4,17 @@ import lombok.*;
 import ru.practicum.location.dto.LocationDto;
 import ru.practicum.request.model.StateAction;
 
-import java.time.LocalDateTime;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @ToString
 @Builder
-public class UpdateEventAdminRequest extends UpdateEvent {
+public class UpdateEventAdminRequest {
     private String annotation;
     private Long category;
     private String description;
-    private LocalDateTime eventDate;
+    private String eventDate;
     private LocationDto location;
     private Boolean paid;
     private Integer participantLimit;

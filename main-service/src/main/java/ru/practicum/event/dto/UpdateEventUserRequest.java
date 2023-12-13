@@ -8,7 +8,6 @@ import ru.practicum.location.dto.LocationDto;
 import ru.practicum.validator.StateUserAction;
 
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,7 +20,7 @@ public class UpdateEventUserRequest {
     private Long category;
     @Size(min = 20, max = 7000)
     private String description;
-    private LocalDateTime eventDate;
+    private String eventDate;
     private LocationDto location;
     private Boolean paid;
     private Integer participantLimit;

@@ -80,7 +80,8 @@ public class EventMapper {
                 .annotation(eventDto.getAnnotation() != null ? eventDto.getAnnotation() : event.getAnnotation())
                 .category(category != null ? category : event.getCategory())
                 .description(eventDto.getDescription() != null ? eventDto.getDescription() : event.getDescription())
-                .eventDate(eventDto.getEventDate() != null ? eventDto.getEventDate() : event.getEventDate())
+                .eventDate(eventDto.getEventDate() != null ? LocalDateTime.parse(eventDto.getEventDate(),
+                        DATE_TIME_FORMATTER) : event.getEventDate())
                 .location(location != null ? location : event.getLocation())
                 .paid(eventDto.getPaid() != null ? eventDto.getPaid() : event.getPaid())
                 .participantLimit(eventDto.getParticipantLimit() != null ? eventDto.getParticipantLimit() :
@@ -110,7 +111,8 @@ public class EventMapper {
                 .annotation(eventDto.getAnnotation() != null ? eventDto.getAnnotation() : event.getAnnotation())
                 .category(category != null ? category : event.getCategory())
                 .description(eventDto.getDescription() != null ? eventDto.getDescription() : event.getDescription())
-                .eventDate(eventDto.getEventDate() != null ? eventDto.getEventDate() : event.getEventDate())
+                .eventDate(eventDto.getEventDate() != null ? LocalDateTime.parse(eventDto.getEventDate(),
+                        DATE_TIME_FORMATTER) : event.getEventDate())
                 .location(location != null ? location : event.getLocation())
                 .paid(eventDto.getPaid() != null ? eventDto.getPaid() : event.getPaid())
                 .participantLimit(eventDto.getParticipantLimit() != null ? eventDto.getParticipantLimit() :
