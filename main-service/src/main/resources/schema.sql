@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS events
     category_id BIGINT NOT NULL,
     created_on TIMESTAMP WITHOUT TIME ZONE,
     description VARCHAR(7000) NOT NULL ,
-    eventDate TIMESTAMP WITHOUT TIME ZONE,
+    event_date TIMESTAMP WITHOUT TIME ZONE,
     initiator_id BIGINT NOT NULL,
     location_id BIGINT NOT NULL,
     paid BOOLEAN NOT NULL,
