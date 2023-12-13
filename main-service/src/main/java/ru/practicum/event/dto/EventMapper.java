@@ -20,57 +20,59 @@ import static ru.practicum.validator.Constants.DATE_TIME_FORMATTER;
 public class EventMapper {
 
     public Event toEvent(NewEventDto newEventDto, Category category, User user, Location location) {
-        return new Event(
-                null,
-                newEventDto.getAnnotation(),
-                category,
-                LocalDateTime.now(),
-                newEventDto.getDescription(),
-                LocalDateTime.parse(newEventDto.getEventDate(), DATE_TIME_FORMATTER),
-                user,
-                location,
-                newEventDto.getPaid(),
-                newEventDto.getParticipantLimit(),
-                null,
-                State.PENDING,
-                newEventDto.getTitle(),
-                newEventDto.getRequestModeration()
-        );
+        return Event.builder()
+                .id(0L)
+                .annotation(newEventDto.getAnnotation())
+                .category(category)
+                .createdOn(LocalDateTime.now())
+                .description(newEventDto.getDescription())
+                .eventDate(newEventDto.getEventDate() != null ? LocalDateTime.parse(newEventDto.getEventDate(),
+                        DATE_TIME_FORMATTER) : null)
+                .initiator(user)
+                .location(location)
+                .paid(newEventDto.getPaid() != null ? newEventDto.getPaid() : false)
+                .participantLimit(newEventDto.getParticipantLimit())
+                .publishedOn(null)
+                .state(State.PENDING)
+                .title(newEventDto.getTitle())
+                .requestModeration(newEventDto.getRequestModeration() != null ? newEventDto.getRequestModeration() : true)
+                .build();
+
     }
 
     public EventShortDto toEventShortDto(Event event, Integer confirmedRequests, Long views) {
-        return new EventShortDto(
-                event.getId(),
-                event.getAnnotation(),
-                CategoryMapper.toCategoryDto(event.getCategory()),
-                confirmedRequests,
-                event.getEventDate().format(DATE_TIME_FORMATTER),
-                UserMapper.toUserShortDto(event.getInitiator()),
-                event.getPaid(),
-                event.getTitle(),
-                views
-        );
+        return EventShortDto.builder()
+                .id(event.getId())
+                .annotation(event.getAnnotation())
+                .category(event.getCategory() != null ? CategoryMapper.toCategoryDto(event.getCategory()) : null)
+                .confirmedRequests(confirmedRequests)
+                .eventDate(event.getEventDate() != null ? event.getEventDate().format(DATE_TIME_FORMATTER) : null)
+                .initiator(event.getInitiator() != null ? UserMapper.toUserShortDto(event.getInitiator()) : null)
+                .paid(event.getPaid())
+                .title(event.getTitle())
+                .views(views)
+                .build();
     }
 
     public EventFullDto toEventFullDto(Event event, Integer confirmedRequest, Long views) {
-        return new EventFullDto(
-                event.getId(),
-                event.getAnnotation(),
-                CategoryMapper.toCategoryDto(event.getCategory()),
-                event.getCreatedOn().format(DATE_TIME_FORMATTER),
-                event.getDescription(),
-                event.getEventDate().format(DATE_TIME_FORMATTER),
-                UserMapper.toUserShortDto(event.getInitiator()),
-                LocationMapper.toLocationDto(event.getLocation()),
-                event.getPaid(),
-                event.getParticipantLimit(),
-                event.getPublishedOn().format(DATE_TIME_FORMATTER),
-                event.getRequestModeration(),
-                event.getState().toString(),
-                event.getTitle(),
-                views,
-                confirmedRequest
-        );
+        return EventFullDto.builder()
+                .id(event.getId())
+                .annotation(event.getAnnotation())
+                .category(CategoryMapper.toCategoryDto(event.getCategory()))
+                .createdOn(event.getCreatedOn().format(DATE_TIME_FORMATTER))
+                .description(event.getDescription())
+                .eventDate(event.getEventDate().format(DATE_TIME_FORMATTER))
+                .initiator(UserMapper.toUserShortDto(event.getInitiator()))
+                .location(LocationMapper.toLocationDto(event.getLocation()))
+                .paid(event.getPaid())
+                .participantLimit(event.getParticipantLimit())
+                .publishedOn(event.getPublishedOn() != null ? event.getPublishedOn().format(DATE_TIME_FORMATTER) : null)
+                .requestModeration(event.getRequestModeration())
+                .state(event.getState().toString())
+                .title(event.getTitle())
+                .views(views)
+                .confirmedRequests(confirmedRequest)
+                .build();
     }
 
     public Event toEventFromAdminUpdateDto(Event event, UpdateEventAdminRequest eventDto, Category category, Location location) {
