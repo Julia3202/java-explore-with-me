@@ -9,7 +9,7 @@ import ru.practicum.compilation.dto.UpdateCompilationDto;
 import ru.practicum.compilation.service.CompilationService;
 
 @RestController
-@RequestMapping("/admin/compilation")
+@RequestMapping("/admin/compilations")
 @RequiredArgsConstructor
 public class AdminCompilationController {
     private final CompilationService compilationService;

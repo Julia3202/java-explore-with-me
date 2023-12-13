@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.event.model.Event;
 import ru.practicum.exception.ConflictException;
+import ru.practicum.exception.ValidationException;
 import ru.practicum.request.dao.RequestRepository;
 import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.request.dto.RequestMapper;
@@ -32,6 +33,9 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public ParticipationRequestDto create(Long userId, Long eventId) {
         User user = validatorService.existUserById(userId);
+        if(eventId == null){
+            throw new ValidationException("Не указан ID события.");
+        }
         Event event = validatorService.existEventById(eventId);
         Optional<Request> requestList = requestRepository.findAllByRequesterAndEvent(userId, eventId);
         if (requestList.isPresent()) {

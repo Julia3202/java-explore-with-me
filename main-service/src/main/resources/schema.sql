@@ -34,8 +34,8 @@ CREATE TABLE IF NOT EXISTS events
     participant_limit BIGINT NOT NULL ,
     published_on TIMESTAMP WITHOUT TIME ZONE,
     request_moderation BOOLEAN NOT NULL ,
-    state VARCHAR(10) NOT NULL ,
-    title VARCHAR(100) NOT NULL,
+    state VARCHAR(20) NOT NULL ,
+    title VARCHAR(120) NOT NULL,
     CONSTRAINT fk_event_to_categories FOREIGN KEY (category_id)
         REFERENCES categories (category_id),
     CONSTRAINT fk_event_to_users FOREIGN KEY (initiator_id)
