@@ -66,7 +66,7 @@ public class EventMapper {
                 .location(LocationMapper.toLocationDto(event.getLocation()))
                 .paid(event.getPaid())
                 .participantLimit(event.getParticipantLimit())
-                .publishedOn(event.getPublishedOn() != null ? event.getPublishedOn().format(DATE_TIME_FORMATTER) : null)
+                .publishedOn(event.getPublishedOn().format(DATE_TIME_FORMATTER))
                 .requestModeration(event.getRequestModeration())
                 .state(event.getState().toString())
                 .title(event.getTitle())

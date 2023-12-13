@@ -1,7 +1,6 @@
 package ru.practicum.request.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.event.model.Event;
@@ -24,7 +23,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@Slf4j
 public class RequestServiceImpl implements RequestService {
     private final RequestRepository requestRepository;
     private final ValidatorService validatorService;
@@ -34,10 +32,8 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public ParticipationRequestDto create(Long userId, Long eventId) {
         User user = validatorService.existUserById(userId);
-        log.info("check user");
         Event event = validatorService.existEventById(eventId);
-        log.info("check event");
-        Optional<Request> requestList = requestRepository.findAllByRequesterIdAndEventId(userId, eventId);
+        Optional<Request> requestList = requestRepository.findAllByRequesterAndEvent(userId, eventId);
         if (requestList.isPresent()) {
             throw new ConflictException("Пользователь с email- " + user.getEmail() + " уже зарегистрирован.");
         }

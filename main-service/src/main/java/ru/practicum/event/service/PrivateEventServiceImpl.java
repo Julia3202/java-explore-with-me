@@ -11,7 +11,6 @@ import ru.practicum.event.dto.*;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.State;
 import ru.practicum.exception.ConflictException;
-import ru.practicum.exception.ValidationException;
 import ru.practicum.location.dao.LocationRepository;
 import ru.practicum.location.dto.LocationMapper;
 import ru.practicum.location.model.Location;
@@ -30,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.practicum.event.model.State.PENDING;
 import static ru.practicum.validator.Constants.DATE_TIME_FORMATTER;
 
 @Service
@@ -47,16 +47,21 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
     @Override
     public EventFullDto create(Long userId, NewEventDto newEventDto) {
+        LocalDateTime eventDateTime = LocalDateTime.parse(newEventDto.getEventDate(), DATE_TIME_FORMATTER);
+        if (LocalDateTime.now().plusHours(2).isAfter(eventDateTime)) {
+            throw new ConflictException("Создавать событие можно не позднее, чем за 2 часа.");
+        }
         eventValidator.checkForCreateEvent(newEventDto);
         User user = validatorService.existUserById(userId);
         Category category = validatorService.existCategoryById(newEventDto.getCategory());
         Location locations = LocationMapper.toLocation(newEventDto.getLocation());
         Location location = locationRepository.save(locations);
         Event event = EventMapper.toEvent(newEventDto, category, user, location);
-        LocalDateTime eventDateTime = LocalDateTime.parse(newEventDto.getEventDate(), DATE_TIME_FORMATTER);
-        if (eventDateTime.isAfter(LocalDateTime.now())) {
-            throw new ValidationException("Нельзя создавать событие с датой раньше сегодня.");
-        }
+        event.setInitiator(user);
+        event.setPaid(newEventDto.getPaid() != null ? newEventDto.getPaid() : false);
+        event.setParticipantLimit(newEventDto.getParticipantLimit() != null ? newEventDto.getParticipantLimit() : 0);
+        event.setRequestModeration(newEventDto.getRequestModeration() != null ? newEventDto.getRequestModeration() : true);
+        event.setState(PENDING);
         eventRepository.save(event);
         return EventMapper.toEventFullDto(event, 0, 0L);
     }
