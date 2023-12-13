@@ -24,13 +24,11 @@ import ru.practicum.validator.EventValidator;
 import ru.practicum.validator.LocationValidator;
 import ru.practicum.validator.ValidatorService;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static ru.practicum.event.model.State.PENDING;
-import static ru.practicum.validator.Constants.DATE_TIME_FORMATTER;
 
 @Service
 @RequiredArgsConstructor
@@ -47,10 +45,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
     @Override
     public EventFullDto create(Long userId, NewEventDto newEventDto) {
-        LocalDateTime eventDateTime = LocalDateTime.parse(newEventDto.getEventDate(), DATE_TIME_FORMATTER);
-        if (LocalDateTime.now().plusHours(2).isAfter(eventDateTime)) {
-            throw new ConflictException("Создавать событие можно не позднее, чем за 2 часа.");
-        }
         eventValidator.checkForCreateEvent(newEventDto);
         User user = validatorService.existUserById(userId);
         Category category = validatorService.existCategoryById(newEventDto.getCategory());
@@ -58,9 +52,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         Location location = locationRepository.save(locations);
         Event event = EventMapper.toEvent(newEventDto, category, user, location);
         event.setInitiator(user);
-        event.setPaid(newEventDto.getPaid() != null ? newEventDto.getPaid() : false);
-        event.setParticipantLimit(newEventDto.getParticipantLimit() != null ? newEventDto.getParticipantLimit() : 0);
-        event.setRequestModeration(newEventDto.getRequestModeration() != null ? newEventDto.getRequestModeration() : true);
         event.setState(PENDING);
         eventRepository.save(event);
         return EventMapper.toEventFullDto(event, 0, 0L);

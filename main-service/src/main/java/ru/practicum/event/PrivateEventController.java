@@ -2,34 +2,38 @@ package ru.practicum.event;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.dto.*;
 import ru.practicum.event.service.PrivateEventService;
 import ru.practicum.request.dto.ParticipationRequestDto;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/users/{userId}/events")
 @RequiredArgsConstructor
+@Validated
 public class PrivateEventController {
     private final PrivateEventService eventService;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public EventFullDto create(@PathVariable Long userId, @RequestBody NewEventDto newEventDto) {
+    public EventFullDto create(@PathVariable Long userId, @Valid @RequestBody NewEventDto newEventDto) {
         return eventService.create(userId, newEventDto);
     }
 
     @PatchMapping("/{eventId}")
     public EventFullDto update(@PathVariable Long userId, @PathVariable Long eventId,
-                               @RequestBody UpdateEventUserRequest eventDto) {
+                               @Valid @RequestBody UpdateEventUserRequest eventDto) {
         return eventService.update(userId, eventId, eventDto);
     }
 
     @PatchMapping("/{eventId}/requests")
     public EventRequestStatusUpdateResult updateRequestForOwner(@PathVariable Long userId, @PathVariable Long eventId,
-                                                                @RequestBody EventRequestStatusUpdateRequest eventRequest) {
+                                                                @Valid @RequestBody EventRequestStatusUpdateRequest
+                                                                        eventRequest) {
         return eventService.updateRequestsForOwnersEvent(userId, eventId, eventRequest);
     }
 
