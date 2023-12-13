@@ -54,7 +54,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         Location location = locationRepository.save(locations);
         Event event = EventMapper.toEvent(newEventDto, category, user, location);
         LocalDateTime eventDateTime = LocalDateTime.parse(newEventDto.getEventDate(), DATE_TIME_FORMATTER);
-        if (eventDateTime.isAfter(LocalDateTime.now())) {
+        if (eventDateTime.isBefore(LocalDateTime.now())) {
             throw new ValidationException("Нельзя создавать событие с датой раньше сегодня.");
         }
         eventRepository.save(event);
