@@ -60,7 +60,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         Event event = EventMapper.toEvent(newEventDto, category, user, location);
         event.setInitiator(user);
         event.setState(PENDING);
-        eventRepository.save(event);
         if (newEventDto.getParticipantLimit() == null) {
             newEventDto.setParticipantLimit(0);
         }
@@ -70,6 +69,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         if (newEventDto.getRequestModeration()) {
             newEventDto.setRequestModeration(true);
         }
+        eventRepository.save(event);
         return EventMapper.toEventFullDto(event, 0, 0L);
     }
 
