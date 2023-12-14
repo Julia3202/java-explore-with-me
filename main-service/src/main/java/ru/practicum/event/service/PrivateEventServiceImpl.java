@@ -61,6 +61,15 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         event.setInitiator(user);
         event.setState(PENDING);
         eventRepository.save(event);
+        if (newEventDto.getParticipantLimit() == null) {
+            newEventDto.setParticipantLimit(0);
+        }
+        if (newEventDto.getPaid() == null) {
+            newEventDto.setPaid(false);
+        }
+        if (newEventDto.getRequestModeration()) {
+            newEventDto.setRequestModeration(true);
+        }
         return EventMapper.toEventFullDto(event, 0, 0L);
     }
 
@@ -179,6 +188,12 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     @Transactional(readOnly = true)
     public List<EventShortDto> getPrivateEvents(Long userId, Integer from, Integer size) {
         validatorService.existUserById(userId);
+        if (from == null) {
+            from = 0;
+        }
+        if (size == null) {
+            size = 10;
+        }
         validatorService.validSizeAndFrom(from, size);
         Pageable pageable = PageRequest.of(from / size, size);
         List<Event> events = eventRepository.findAllByInitiatorId(userId, pageable);

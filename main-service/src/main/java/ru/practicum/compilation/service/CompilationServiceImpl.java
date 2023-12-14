@@ -71,6 +71,12 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public List<CompilationDto> getCompilationList(Boolean pinned, Integer from, Integer size) {
+        if (from == null) {
+            from = 0;
+        }
+        if (size == null) {
+            size = 10;
+        }
         validatorService.validSizeAndFrom(from, size);
         Pageable page = PageRequest.of(from / size, size);
         List<Compilation> compilationList;

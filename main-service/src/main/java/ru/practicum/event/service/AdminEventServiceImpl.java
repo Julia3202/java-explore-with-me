@@ -48,6 +48,13 @@ public class AdminEventServiceImpl implements AdminEventService {
         LocalDateTime start = dateValidator.toTime(rangeStart);
         LocalDateTime end = dateValidator.toTime(rangeEnd);
         dateValidator.validTime(start, end);
+        if (from == null) {
+            from = 0;
+        }
+        if (size == null) {
+            size = 10;
+        }
+        validatorService.validSizeAndFrom(from, size);
         Pageable page = PageRequest.of(from / size, size);
         BooleanBuilder query = new BooleanBuilder()
                 .and(!CollectionUtils.isEmpty(users) ? QEvent.event.initiator.id.in(users) : null)

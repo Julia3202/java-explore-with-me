@@ -35,15 +35,6 @@ public class EventValidator {
         if (newEventDto.getAnnotation().length() < 20 || newEventDto.getAnnotation().length() > 2000) {
             throw new ValidationException("Заголовок должен иметь длину от 3 до 120 символов.");
         }
-        if (newEventDto.getParticipantLimit() == null) {
-            newEventDto.setParticipantLimit(0);
-        }
-        if (newEventDto.getPaid() == null) {
-            newEventDto.setPaid(false);
-        }
-        if (newEventDto.getRequestModeration()) {
-            newEventDto.setRequestModeration(true);
-        }
     }
 
     public boolean checkRestriction(Event event) {
