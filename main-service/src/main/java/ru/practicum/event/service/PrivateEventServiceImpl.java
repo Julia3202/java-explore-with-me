@@ -61,13 +61,13 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         event.setInitiator(user);
         event.setState(PENDING);
         if (newEventDto.getParticipantLimit() == null) {
-            newEventDto.setParticipantLimit(0);
+            event.setParticipantLimit(0);
         }
         if (newEventDto.getPaid() == null) {
-            newEventDto.setPaid(false);
+            event.setPaid(false);
         }
-        if (newEventDto.getRequestModeration()) {
-            newEventDto.setRequestModeration(true);
+        if (newEventDto.getRequestModeration() == null) {
+            event.setRequestModeration(true);
         }
         eventRepository.save(event);
         return EventMapper.toEventFullDto(event, 0, 0L);
