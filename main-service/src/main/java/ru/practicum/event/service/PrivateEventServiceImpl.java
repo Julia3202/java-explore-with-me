@@ -75,7 +75,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
             throw new ConflictException("Изменять можно события, которые еще не опубликованы или отменены.");
         }
         LocalDateTime eventDateTime = LocalDateTime.parse(eventDto.getEventDate(), DATE_TIME_FORMATTER);
-        if (LocalDateTime.now().plusHours(2).isAfter(eventDateTime)) {
+        if (LocalDateTime.now().plusHours(2).isBefore(eventDateTime)) {
             throw new ConflictException("Дата и время на которые намечено событие не может быть раньше, чем " +
                     "через два часа от текущего момента.");
         }
