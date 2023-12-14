@@ -8,8 +8,8 @@ import ru.practicum.user.dto.NewUserDto;
 @Slf4j
 public class UserValidator {
     public boolean validName(NewUserDto user) {
-        if (user.getName().length() > 250) {
-            throw new ValidationException("Email не может быть длянее 254 символов.");
+        if (user.getName().length() > 250 || user.getName().length() < 2) {
+            throw new ValidationException("Email не может быть длинее 254 символов.");
         }
         if (StringUtils.isBlank(user.getName())) {
             log.info("Поле с именем должно быть заполнено.");
@@ -23,8 +23,8 @@ public class UserValidator {
             log.warn("Поле 'email' не может быть пустым и должен содержать символ '@'.");
             throw new ValidationException("Поле 'email' не может быть пустым и должен содержать символ '@'.");
         }
-        if (user.getEmail().length() > 254) {
-            throw new ValidationException("Email не может быть длянее 254 символов.");
+        if (user.getEmail().length() > 254 || user.getEmail().length() < 6) {
+            throw new ValidationException("Email не может быть длинее 254 символов.");
         }
         return true;
     }

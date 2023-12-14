@@ -10,6 +10,7 @@ import ru.practicum.compilation.dao.CompilationRepository;
 import ru.practicum.compilation.model.Compilation;
 import ru.practicum.event.dao.EventRepository;
 import ru.practicum.event.model.Event;
+import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.ValidationException;
 import ru.practicum.request.dao.RequestRepository;
@@ -57,7 +58,7 @@ public class ValidatorService {
     public void uniqueName(NewCategoryDto newCategoryDto) {
         Category category = categoryRepository.findByName(newCategoryDto.getName());
         if (category != null) {
-            throw new ValidationException("Категория с именем-" + newCategoryDto.getName() + " уже создана.");
+            throw new ConflictException("Категория с именем-" + newCategoryDto.getName() + " уже создана.");
         }
     }
 

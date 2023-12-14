@@ -128,32 +128,22 @@ public class PrivateEventServiceImpl implements PrivateEventService {
                                                                        EventRequestStatusUpdateRequest eventRequest) {
         Event event = validatorService.existEventById(eventId);
         validatorService.existUserById(userId);
-        if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
-            throw new ConflictException("Количество участников .");
-        }
-
         long confirmedReq = requestRepository.countByEventIdAndStatus(eventId, CONFIRMED);
-
         if (event.getParticipantLimit() != 0 && event.getParticipantLimit() <= confirmedReq) {
             throw new ConflictException("нельзя подтвердить заявку, если уже достигнут лимит по заявкам на данное событие.");
         }
-
         List<Request> requestList = requestRepository
                 .findAllByIdIn(eventRequest.getRequestIds());
-
         List<Long> notFoundIds = eventRequest.getRequestIds().stream()
                 .filter(requestId -> requestList.stream().noneMatch(request -> request.getId().equals(requestId)))
                 .collect(Collectors.toList());
-
         if (!notFoundIds.isEmpty()) {
             throw new NotFoundException("Participation request ids=" + notFoundIds + " not found");
         }
-
         EventRequestStatusUpdateResult result = EventRequestStatusUpdateResult.builder()
                 .confirmedRequests(new ArrayList<>())
                 .rejectedRequests(new ArrayList<>())
                 .build();
-
         for (Request request : requestList) {
             if (!request.getStatus().equals(Status.PENDING)) {
                 throw new ConflictException("Unable to accept/reject request that not is in pending state.");

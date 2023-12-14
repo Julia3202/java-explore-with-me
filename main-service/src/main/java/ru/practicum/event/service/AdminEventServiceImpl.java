@@ -19,6 +19,7 @@ import ru.practicum.event.model.State;
 import ru.practicum.location.dao.LocationRepository;
 import ru.practicum.location.dto.LocationMapper;
 import ru.practicum.location.model.Location;
+import ru.practicum.request.model.StateAction;
 import ru.practicum.utils.DateValidator;
 import ru.practicum.utils.EventValidator;
 import ru.practicum.utils.LocationValidator;
@@ -26,7 +27,10 @@ import ru.practicum.utils.ValidatorService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static ru.practicum.utils.Constants.DATE_TIME_FORMATTER;
 
 @Service
 @RequiredArgsConstructor
@@ -48,12 +52,6 @@ public class AdminEventServiceImpl implements AdminEventService {
         LocalDateTime start = dateValidator.toTime(rangeStart);
         LocalDateTime end = dateValidator.toTime(rangeEnd);
         dateValidator.validTime(start, end);
-        if (from == null) {
-            from = 0;
-        }
-        if (size == null) {
-            size = 10;
-        }
         validatorService.validSizeAndFrom(from, size);
         Pageable page = PageRequest.of(from / size, size);
         BooleanBuilder query = new BooleanBuilder()
@@ -84,9 +82,26 @@ public class AdminEventServiceImpl implements AdminEventService {
         if (eventDto.getLocation() != null) {
             locationValidator.validLocation(eventDto.getLocation().getLat(), eventDto.getLocation().getLon());
             location = locationRepository.save(LocationMapper.toLocation(eventDto.getLocation()));
+            event.setLocation(location);
+        }
+        Optional.ofNullable(eventDto.getTitle()).ifPresent(event::setTitle);
+        Optional.ofNullable(eventDto.getAnnotation()).ifPresent(event::setAnnotation);
+        Optional.ofNullable(eventDto.getDescription()).ifPresent(event::setDescription);
+        Optional.ofNullable(LocalDateTime.parse(eventDto.getEventDate(), DATE_TIME_FORMATTER)).ifPresent(event::setEventDate);
+        Optional.ofNullable(eventDto.getParticipantLimit()).ifPresent(event::setParticipantLimit);
+        Optional.ofNullable(eventDto.getPaid()).ifPresent(event::setPaid);
+        Optional.ofNullable(eventDto.getRequestModeration()).ifPresent(event::setRequestModeration);
+        if (eventDto.getStateAction() != null) {
+            if (eventDto.getStateAction().equals(StateAction.PUBLISH_EVENT)) {
+                event.setState(State.PUBLISHED);
+                event.setPublishedOn(LocalDateTime.now());
+            }
+            if (eventDto.getStateAction().equals(StateAction.REJECT_EVENT)) {
+                event.setState(State.CANCELED);
+            }
         }
         Event eventFromRepository = eventRepository.save(EventMapper.toEventFromAdminUpdateDto(event, eventDto,
                 category, location));
-        return eventUtilService.listEventFull(List.of(eventFromRepository)).get(0);
+        return EventMapper.toEventFullDto(eventFromRepository, 0, 0L);
     }
 }

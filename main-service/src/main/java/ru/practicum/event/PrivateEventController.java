@@ -8,7 +8,6 @@ import ru.practicum.event.dto.*;
 import ru.practicum.event.service.PrivateEventService;
 import ru.practicum.request.dto.ParticipationRequestDto;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -20,19 +19,19 @@ public class PrivateEventController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public EventFullDto create(@PathVariable Long userId, @Valid @RequestBody NewEventDto newEventDto) {
+    public EventFullDto create(@PathVariable Long userId, @RequestBody NewEventDto newEventDto) {
         return eventService.create(userId, newEventDto);
     }
 
     @PatchMapping("/{eventId}")
     public EventFullDto update(@PathVariable Long userId, @PathVariable Long eventId,
-                               @Valid @RequestBody UpdateEventUserRequest eventDto) {
+                               @RequestBody UpdateEventUserRequest eventDto) {
         return eventService.update(userId, eventId, eventDto);
     }
 
     @PatchMapping("/{eventId}/requests")
     public EventRequestStatusUpdateResult updateRequestForOwner(@PathVariable Long userId, @PathVariable Long eventId,
-                                                                @Valid @RequestBody EventRequestStatusUpdateRequest
+                                                                @RequestBody EventRequestStatusUpdateRequest
                                                                         eventRequest) {
         return eventService.updateRequestsForOwnersEvent(userId, eventId, eventRequest);
     }

@@ -9,6 +9,9 @@ import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.dto.CategoryMapper;
 import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.model.Category;
+import ru.practicum.event.dao.EventRepository;
+import ru.practicum.event.model.Event;
+import ru.practicum.exception.ConflictException;
 import ru.practicum.utils.CategoryValidator;
 import ru.practicum.utils.ValidatorService;
 
@@ -20,6 +23,7 @@ import java.util.stream.Collectors;
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final ValidatorService validatorService;
+    private final EventRepository eventRepository;
     private final CategoryValidator categoryValidator = new CategoryValidator();
 
     @Override
@@ -64,6 +68,10 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void delete(Long id) {
         Category category = validatorService.existCategoryById(id);
+        List<Event> eventList = eventRepository.findAllByCategoryId(id);
+        if (!eventList.isEmpty()) {
+            throw new ConflictException("Удаление невозможно,к категории относится " + eventList.size() + " событий.");
+        }
         categoryRepository.delete(category);
     }
 }

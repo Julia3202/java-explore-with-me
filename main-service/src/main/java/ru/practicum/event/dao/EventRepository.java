@@ -18,4 +18,6 @@ public interface EventRepository extends JpaRepository<Event, Long>, QuerydslPre
     Optional<LocalDateTime> getMinPublishedDate(List<Long> eventIdList);
 
     List<Event> findAllByInitiatorId(Long userId, Pageable pageable);
+
+    List<Event> findAllByCategoryId(Long catId);
 }

@@ -8,7 +8,6 @@ import ru.practicum.event.service.PublicEventService;
 import ru.practicum.utils.SorterEvent;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.Positive;
 import java.util.List;
 
 @RestController
@@ -31,7 +30,7 @@ public class PublicEventController {
                                                   @RequestParam(required = false) Boolean onlyAvailable,
                                                   @RequestParam(required = false) SorterEvent sort,
                                                   @RequestParam(defaultValue = "0") Integer from,
-                                                  @Positive @RequestParam(defaultValue = "10") Integer size,
+                                                  @RequestParam(defaultValue = "10") Integer size,
                                                   HttpServletRequest httpServletRequest) {
         return publicEventService.getPublicEventList(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from,
                 size, httpServletRequest);

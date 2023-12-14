@@ -6,7 +6,6 @@ import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.UpdateEventAdminRequest;
 import ru.practicum.event.service.AdminEventService;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -21,8 +20,8 @@ public class AdminEventController {
                                            @RequestParam(required = false) List<Long> categories,
                                            @RequestParam(required = false) String rangeStart,
                                            @RequestParam(required = false) String rangeEnd,
-                                           @Valid @RequestParam(defaultValue = "0") Integer from,
-                                           @Valid @RequestParam(defaultValue = "10") Integer size) {
+                                           @RequestParam(defaultValue = "0") Integer from,
+                                           @RequestParam(defaultValue = "10") Integer size) {
         return eventService.getAdminFullEvent(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 

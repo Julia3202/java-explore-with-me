@@ -11,6 +11,7 @@ import ru.practicum.exception.ValidationException;
 import java.time.LocalDateTime;
 
 import static ru.practicum.request.model.StateAction.PUBLISH_EVENT;
+import static ru.practicum.request.model.StateAction.REJECT_EVENT;
 import static ru.practicum.utils.Constants.DATE_TIME_FORMATTER;
 
 public class EventValidator {
@@ -42,14 +43,12 @@ public class EventValidator {
     }
 
     public void validStateForUpdate(UpdateEventAdminRequest eventDto, Event event) {
-        if (eventDto.getStateAction().equals(PUBLISH_EVENT)) {
-            if (!event.getState().equals(State.PENDING)) {
-                throw new ConflictException("Событие можно публиковать, только если оно в состоянии ожидания публикации.");
-            }
-        } else {
-            if (!event.getState().equals(State.PENDING)) {
-                throw new ConflictException("Событие можно отклонить, только если оно еще не опубликовано.");
-            }
+        if (eventDto.getStateAction().equals(PUBLISH_EVENT) && (!event.getState().equals(State.PENDING))) {
+            throw new ConflictException("Событие можно публиковать, только если оно в состоянии ожидания публикации.");
+        }
+
+        if (eventDto.getStateAction().equals(REJECT_EVENT) && (!event.getState().equals(State.PENDING))) {
+            throw new ConflictException("Событие можно отклонить, только если оно еще не опубликовано.");
         }
     }
 }

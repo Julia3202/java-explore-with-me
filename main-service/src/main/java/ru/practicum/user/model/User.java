@@ -20,10 +20,10 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(nullable = false, length = 200)
+    @Column(nullable = false)
     private String name;
 
-    @Column(unique = true, nullable = false, length = 200)
+    @Column(unique = true, nullable = false)
     @Email
     private String email;
 }
