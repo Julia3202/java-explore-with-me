@@ -28,7 +28,7 @@ public class ValidatorService {
     private final EventRepository eventRepository;
 
     public User existUserById(Long userId) {
-log.info("user");
+        log.info("user");
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с ID- " + userId + " не найден."));
     }
@@ -60,20 +60,13 @@ log.info("user");
             throw new ValidationException("Категория с именем-" + newCategoryDto.getName() + " уже создана.");
         }
     }
-    public Boolean validFrom(int from) {
+
+    public void validSizeAndFrom(int from, int size) {
         if (from < 0) {
             throw new ValidationException("Значение первого элемента должно быть строго больше 0.");
         }
-        return true;
-    }
-
-    public Boolean validSize(int size) {
         if (size <= 0) {
             throw new ValidationException("Количество выводимых строк строго должно быть больше 0.");
         }
-        return true;
-    }
-    public boolean validSizeAndFrom(int from, int size){
-        return validFrom(from) && validSize(size);
     }
 }
