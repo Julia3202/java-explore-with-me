@@ -27,4 +27,6 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     void requestStatusUpdate(Status status, List<Long> requestsIdsForConfirm);
 
     Optional<Request> findAllByRequesterAndEvent(Long userId, Long eventId);
+
+    Long countByEventIdAndStatus(Long eventId, Status status);
 }

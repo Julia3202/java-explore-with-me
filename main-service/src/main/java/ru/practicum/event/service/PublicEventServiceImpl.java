@@ -17,14 +17,16 @@ import ru.practicum.event.model.Event;
 import ru.practicum.event.model.QEvent;
 import ru.practicum.event.model.State;
 import ru.practicum.exception.NotFoundException;
-import ru.practicum.validator.DateValidator;
-import ru.practicum.validator.ValidatorService;
+import ru.practicum.utils.DateValidator;
+import ru.practicum.utils.SorterEvent;
+import ru.practicum.utils.ValidatorService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
-import static ru.practicum.validator.Constants.DATE_TIME_FORMATTER;
+import static ru.practicum.utils.Constants.DATE_TIME_FORMATTER;
 
 @Service
 @RequiredArgsConstructor
@@ -54,7 +56,7 @@ public class PublicEventServiceImpl implements PublicEventService {
     @Override
     public List<EventShortDto> getPublicEventList(String text, List<Long> categories, Boolean paid,
                                                   String rangeStart, String rangeEnd,
-                                                  Boolean onlyAvailable, String sort, Integer from,
+                                                  Boolean onlyAvailable, SorterEvent sort, Integer from,
                                                   Integer size, HttpServletRequest httpServletRequest) {
         LocalDateTime start = dateValidator.toTime(rangeStart);
         LocalDateTime end = dateValidator.toTime(rangeEnd);
@@ -74,7 +76,12 @@ public class PublicEventServiceImpl implements PublicEventService {
         }
         Page<Event> events = eventRepository.findAll(query, page);
         List<EventShortDto> shortDtos = eventUtilService.listEventShort(events.toList());
-
+        switch (sort) {
+            case EVENT_DATE:
+                shortDtos.sort(Comparator.comparing(EventShortDto::getEventDate));
+            case VIEWS:
+                shortDtos.sort(Comparator.comparing(EventShortDto::getViews).reversed());
+        }
         EndpointHitDto endpointHitDto = new EndpointHitDto(null, "ewm-main", httpServletRequest.getRequestURI(),
                 httpServletRequest.getRemoteAddr(), LocalDateTime.now().format(DATE_TIME_FORMATTER));
         statClient.postHit(endpointHitDto);

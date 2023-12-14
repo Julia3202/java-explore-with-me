@@ -1,4 +1,4 @@
-package ru.practicum.validator;
+package ru.practicum.utils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,5 +59,21 @@ log.info("user");
         if (category != null) {
             throw new ValidationException("Категория с именем-" + newCategoryDto.getName() + " уже создана.");
         }
+    }
+    public Boolean validFrom(int from) {
+        if (from < 0) {
+            throw new ValidationException("Значение первого элемента должно быть строго больше 0.");
+        }
+        return true;
+    }
+
+    public Boolean validSize(int size) {
+        if (size <= 0) {
+            throw new ValidationException("Количество выводимых строк строго должно быть больше 0.");
+        }
+        return true;
+    }
+    public boolean validSizeAndFrom(int from, int size){
+        return validFrom(from) && validSize(size);
     }
 }

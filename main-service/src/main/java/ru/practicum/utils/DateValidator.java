@@ -1,4 +1,4 @@
-package ru.practicum.validator;
+package ru.practicum.utils;
 
 import org.apache.commons.lang3.StringUtils;
 import ru.practicum.exception.ConflictException;
@@ -6,7 +6,7 @@ import ru.practicum.exception.ValidationException;
 
 import java.time.LocalDateTime;
 
-import static ru.practicum.validator.Constants.DATE_TIME_FORMATTER;
+import static ru.practicum.utils.Constants.DATE_TIME_FORMATTER;
 
 public class DateValidator {
     public LocalDateTime toTime(String time) {

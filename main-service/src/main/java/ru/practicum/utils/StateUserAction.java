@@ -1,4 +1,4 @@
-package ru.practicum.validator;
+package ru.practicum.utils;
 
 public enum StateUserAction {
     SEND_TO_REVIEW,

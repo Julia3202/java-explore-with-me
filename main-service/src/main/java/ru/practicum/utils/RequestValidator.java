@@ -1,4 +1,4 @@
-package ru.practicum.validator;
+package ru.practicum.utils;
 
 import ru.practicum.exception.ConflictException;
 import ru.practicum.request.model.Request;

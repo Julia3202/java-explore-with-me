@@ -10,11 +10,11 @@ import ru.practicum.location.model.Location;
 import ru.practicum.request.model.StateAction;
 import ru.practicum.user.dto.UserMapper;
 import ru.practicum.user.model.User;
-import ru.practicum.validator.StateUserAction;
+import ru.practicum.utils.StateUserAction;
 
 import java.time.LocalDateTime;
 
-import static ru.practicum.validator.Constants.DATE_TIME_FORMATTER;
+import static ru.practicum.utils.Constants.DATE_TIME_FORMATTER;
 
 @UtilityClass
 public class EventMapper {

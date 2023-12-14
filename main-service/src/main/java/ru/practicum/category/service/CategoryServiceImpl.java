@@ -9,9 +9,8 @@ import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.dto.CategoryMapper;
 import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.model.Category;
-import ru.practicum.validator.CategoryValidator;
-import ru.practicum.validator.ValidatorService;
-import ru.practicum.validator.ValidatorSizeAndFrom;
+import ru.practicum.utils.CategoryValidator;
+import ru.practicum.utils.ValidatorService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,7 +21,6 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final ValidatorService validatorService;
     private final CategoryValidator categoryValidator = new CategoryValidator();
-    private final ValidatorSizeAndFrom validatorSizeAndFrom = new ValidatorSizeAndFrom();
 
     @Override
     public CategoryDto create(NewCategoryDto newCategoryDto) {
@@ -50,8 +48,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryDto> getListCategories(Integer from, Integer size) {
-        validatorSizeAndFrom.validFrom(from);
-        validatorSizeAndFrom.validSize(size);
+        validatorService.validSizeAndFrom(from, size);
         Pageable page = PageRequest.of(from / size, size);
         return categoryRepository.findAll(page).stream()
                 .map(CategoryMapper::toCategoryDto)

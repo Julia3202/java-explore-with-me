@@ -15,9 +15,8 @@ import ru.practicum.event.dao.EventRepository;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.service.EventUtilService;
-import ru.practicum.validator.CompilationValidator;
-import ru.practicum.validator.ValidatorService;
-import ru.practicum.validator.ValidatorSizeAndFrom;
+import ru.practicum.utils.CompilationValidator;
+import ru.practicum.utils.ValidatorService;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,7 +30,6 @@ public class CompilationServiceImpl implements CompilationService {
     private final EventUtilService utilService;
     private final ValidatorService validatorService;
     private final CompilationValidator compilationValidator = new CompilationValidator();
-    private final ValidatorSizeAndFrom validatorSizeAndFrom = new ValidatorSizeAndFrom();
 
     @Override
     public CompilationDto create(NewCompilationDto newCompilationDto) {
@@ -73,8 +71,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public List<CompilationDto> getCompilationList(Boolean pinned, Integer from, Integer size) {
-        validatorSizeAndFrom.validFrom(from);
-        validatorSizeAndFrom.validSize(size);
+        validatorService.validSizeAndFrom(from, size);
         Pageable page = PageRequest.of(from / size, size);
         List<Compilation> compilationList;
         if (pinned == null) {

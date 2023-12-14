@@ -19,10 +19,10 @@ import ru.practicum.event.model.State;
 import ru.practicum.location.dao.LocationRepository;
 import ru.practicum.location.dto.LocationMapper;
 import ru.practicum.location.model.Location;
-import ru.practicum.validator.DateValidator;
-import ru.practicum.validator.EventValidator;
-import ru.practicum.validator.LocationValidator;
-import ru.practicum.validator.ValidatorService;
+import ru.practicum.utils.DateValidator;
+import ru.practicum.utils.EventValidator;
+import ru.practicum.utils.LocationValidator;
+import ru.practicum.utils.ValidatorService;
 
 import java.time.LocalDateTime;
 import java.util.List;

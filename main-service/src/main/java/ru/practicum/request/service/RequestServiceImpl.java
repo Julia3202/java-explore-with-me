@@ -12,9 +12,9 @@ import ru.practicum.request.dto.RequestMapper;
 import ru.practicum.request.model.Request;
 import ru.practicum.request.model.Status;
 import ru.practicum.user.model.User;
-import ru.practicum.validator.EventValidator;
-import ru.practicum.validator.RequestValidator;
-import ru.practicum.validator.ValidatorService;
+import ru.practicum.utils.EventValidator;
+import ru.practicum.utils.RequestValidator;
+import ru.practicum.utils.ValidatorService;
 
 import java.time.LocalDateTime;
 import java.util.List;

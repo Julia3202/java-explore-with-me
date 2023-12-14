@@ -3,7 +3,7 @@ package ru.practicum.request.dto;
 import lombok.experimental.UtilityClass;
 import ru.practicum.request.model.Request;
 
-import static ru.practicum.validator.Constants.DATE_TIME_FORMATTER;
+import static ru.practicum.utils.Constants.DATE_TIME_FORMATTER;
 
 @UtilityClass
 public class RequestMapper {

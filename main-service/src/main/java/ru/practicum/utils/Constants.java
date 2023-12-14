@@ -1,4 +1,4 @@
-package ru.practicum.validator;
+package ru.practicum.utils;
 
 import java.time.format.DateTimeFormatter;
 

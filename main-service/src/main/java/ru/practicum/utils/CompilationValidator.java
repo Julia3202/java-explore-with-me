@@ -1,4 +1,4 @@
-package ru.practicum.validator;
+package ru.practicum.utils;
 
 import org.apache.commons.lang3.StringUtils;
 import ru.practicum.compilation.dto.NewCompilationDto;

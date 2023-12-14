@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
@@ -14,9 +15,8 @@ import ru.practicum.user.dto.NewUserDto;
 import ru.practicum.user.dto.UserDto;
 import ru.practicum.user.dto.UserMapper;
 import ru.practicum.user.model.User;
-import ru.practicum.validator.UserValidator;
-import ru.practicum.validator.ValidatorSizeAndFrom;
-import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.utils.UserValidator;
+import ru.practicum.utils.ValidatorService;
 
 import java.util.List;
 import java.util.Set;
@@ -28,8 +28,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final ValidatorSizeAndFrom validatorSizeAndFrom = new ValidatorSizeAndFrom();
     private final UserValidator userValidator = new UserValidator();
+    private final ValidatorService validatorService;
 
     @Override
     public UserDto saveUser(NewUserDto newUserDto) {
@@ -47,8 +47,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public List<UserDto> getUser(Set<Long> ids, Integer from, Integer size) {
-        validatorSizeAndFrom.validFrom(from);
-        validatorSizeAndFrom.validSize(size);
+        validatorService.validSizeAndFrom(from, size);
         Pageable page = PageRequest.of(from / size, size);
         Page<User> userPage = CollectionUtils.isEmpty(ids) ?
                 userRepository.findAll(page) :

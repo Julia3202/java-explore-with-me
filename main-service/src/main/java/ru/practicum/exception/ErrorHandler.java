@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 
-import static ru.practicum.validator.Constants.DATE_TIME_FORMATTER;
+import static ru.practicum.utils.Constants.DATE_TIME_FORMATTER;
 
 @RestControllerAdvice
 public class ErrorHandler {
