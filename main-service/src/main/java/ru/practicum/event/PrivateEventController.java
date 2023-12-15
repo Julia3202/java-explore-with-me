@@ -1,6 +1,7 @@
 package ru.practicum.event;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -14,18 +15,22 @@ import java.util.List;
 @RequestMapping("/users/{userId}/events")
 @RequiredArgsConstructor
 @Validated
+@Slf4j
 public class PrivateEventController {
     private final PrivateEventService eventService;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public EventFullDto create(@PathVariable Long userId, @RequestBody NewEventDto newEventDto) {
+        log.info("Поступил запрос на получение списка событий, добавленных пользователем с id={}", userId);
         return eventService.create(userId, newEventDto);
     }
 
     @PatchMapping("/{eventId}")
     public EventFullDto update(@PathVariable Long userId, @PathVariable Long eventId,
                                @RequestBody UpdateEventUserRequest eventDto) {
+        log.info("Поступил запрос на изменение события с id={} от пользователя с id={}, updateData={}",
+                eventId, userId, eventDto);
         return eventService.update(userId, eventId, eventDto);
     }
 
@@ -33,6 +38,8 @@ public class PrivateEventController {
     public EventRequestStatusUpdateResult updateRequestForOwner(@PathVariable Long userId, @PathVariable Long eventId,
                                                                 @RequestBody EventRequestStatusUpdateRequest
                                                                         eventRequest) {
+        log.info("Поступил запрос на изменение статуса заявок на участие в событии с id={} " +
+                "от пользователя с id={}, updateRequest={}", eventId, userId, eventRequest);
         return eventService.updateRequestsForOwnersEvent(userId, eventId, eventRequest);
     }
 

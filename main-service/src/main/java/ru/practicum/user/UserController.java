@@ -19,14 +19,14 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto create(@RequestBody NewUserDto newUserDto) {
+    public UserDto create(@Valid @RequestBody NewUserDto newUserDto) {
         return userService.saveUser(newUserDto);
     }
 
     @GetMapping
     public List<UserDto> getUser(@RequestParam(required = false, name = "ids") Set<Long> ids,
-                                 @RequestParam(defaultValue = "0") Integer from,
-                                 @RequestParam(defaultValue = "10") Integer size) {
+                                 @Valid @RequestParam(defaultValue = "0") Integer from,
+                                 @Valid @RequestParam(defaultValue = "10") Integer size) {
         return userService.getUser(ids, from, size);
     }
 

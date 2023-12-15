@@ -1,9 +1,8 @@
 package ru.practicum.compilation.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import ru.practicum.event.model.Event;
 
 import javax.persistence.*;
@@ -12,8 +11,7 @@ import java.util.List;
 @Table(name = "compilations")
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@Data
 @Entity
 public class Compilation {
     @Id
@@ -21,10 +19,10 @@ public class Compilation {
     @Column(name = "compilation_id")
     private Long id;
 
-    @Column(nullable = false, length = 50)
+    @Column
     private String title;
 
-    @Column(nullable = false)
+    @Column
     private Boolean pinned;
 
     @ManyToMany(fetch = FetchType.LAZY)

@@ -8,11 +8,8 @@ import ru.practicum.event.model.State;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.ValidationException;
 
-import java.time.LocalDateTime;
-
 import static ru.practicum.request.model.StateAction.PUBLISH_EVENT;
 import static ru.practicum.request.model.StateAction.REJECT_EVENT;
-import static ru.practicum.utils.Constants.DATE_TIME_FORMATTER;
 
 public class EventValidator {
     public void checkForCreateEvent(NewEventDto newEventDto) {
@@ -22,19 +19,17 @@ public class EventValidator {
         if (StringUtils.isBlank(newEventDto.getAnnotation())) {
             throw new ValidationException("Поле 'Аннотация' обязательно к заполению.");
         }
-        LocalDateTime eventDateTime = LocalDateTime.parse(newEventDto.getEventDate(), DATE_TIME_FORMATTER);
-        if (LocalDateTime.now().plusHours(2).isBefore(eventDateTime)) {
-            throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, чем через " +
-                    "два часа от текущего момента.");
+        if (StringUtils.isBlank(newEventDto.getEventDate())) {
+            throw new ValidationException("Дата и время на которые намечено событие обязательны к заполению.");
         }
         if (newEventDto.getTitle().length() < 3 || newEventDto.getTitle().length() > 120) {
             throw new ValidationException("Заголовок должен иметь длину от 3 до 120 символов.");
         }
         if (newEventDto.getDescription().length() < 20 || newEventDto.getDescription().length() > 7000) {
-            throw new ValidationException("Заголовок должен иметь длину от 3 до 120 символов.");
+            throw new ValidationException("Описание должно иметь длину от 20 до 7000 символов.");
         }
         if (newEventDto.getAnnotation().length() < 20 || newEventDto.getAnnotation().length() > 2000) {
-            throw new ValidationException("Заголовок должен иметь длину от 3 до 120 символов.");
+            throw new ValidationException("Аннотация должна иметь длину от 20 до 2000 символов.");
         }
     }
 

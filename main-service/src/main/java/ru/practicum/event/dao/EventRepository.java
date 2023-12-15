@@ -4,6 +4,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.practicum.event.model.Event;
 
@@ -20,4 +21,14 @@ public interface EventRepository extends JpaRepository<Event, Long>, QuerydslPre
     List<Event> findAllByInitiatorId(Long userId, Pageable pageable);
 
     List<Event> findAllByCategoryId(Long catId);
+
+    @Query("select e " +
+            "from Event e " +
+            "where ((:users is null or e.initiator.id in :users) " +
+            "and (:states is null or e.state in :states) " +
+            "and (:categories is null or e.category.id in :categories) " +
+            "and (e.eventDate between :rangeStart and :rangeEnd))")
+    List<Event> findAllByAdmin(@Param("users") List<Long> users, @Param("states") List<String> states,
+                               @Param("categories") List<Long> categories, @Param("rangeStart") String rangeStart,
+                               @Param("rangeEnd") String rangeEnd, Pageable page);
 }

@@ -40,19 +40,12 @@ public class UserServiceImpl implements UserService {
         }
         User userFromDto = UserMapper.toNewUser(newUserDto);
         User user = userRepository.save(userFromDto);
-        log.info("save user from BD");
         return UserMapper.toUserDto(user);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<UserDto> getUser(Set<Long> ids, Integer from, Integer size) {
-        if (from == null) {
-            from = 0;
-        }
-        if (size == null) {
-            size = 10;
-        }
         validatorService.validSizeAndFrom(from, size);
         Pageable page = PageRequest.of(from / size, size);
         Page<User> userPage = CollectionUtils.isEmpty(ids) ?

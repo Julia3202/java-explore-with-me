@@ -27,6 +27,7 @@ public class NewEventDto {
     @NotNull
     private String eventDate;
 
+    @NotNull(message = "Error! Location can't be null.")
     private LocationDto location;
 
     private Boolean paid;

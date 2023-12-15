@@ -21,13 +21,13 @@ public class DateValidator {
     }
 
     public void validTime(LocalDateTime start, LocalDateTime end) {
-        if ((start != null && end != null) && start.isAfter(end)) {
+        if ((start != null && end != null) && (start.isAfter(end))) {
             throw new ValidationException("Проверьте правильность заполнения полей с датами.");
         }
     }
 
     public void validStartForUpdate(LocalDateTime time) {
-        if (time != null && time.isAfter(LocalDateTime.now().minusHours(1))) {
+        if (time != null && time.isBefore(LocalDateTime.now().plusHours(2))) {
             throw new ConflictException("Нельзя вносить изменения в событие, т.к. до него осталось меньше часа.");
         }
     }
