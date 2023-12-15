@@ -1,12 +1,14 @@
 package ru.practicum.event.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import ru.practicum.location.dto.LocationDto;
 
 import javax.validation.constraints.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -25,7 +27,8 @@ public class NewEventDto {
     private String description;
 
     @NotNull
-    private String eventDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime eventDate;
 
     @NotNull(message = "Error! Location can't be null.")
     private LocationDto location;

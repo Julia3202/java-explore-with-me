@@ -15,7 +15,6 @@ import ru.practicum.user.dto.NewUserDto;
 import ru.practicum.user.dto.UserDto;
 import ru.practicum.user.dto.UserMapper;
 import ru.practicum.user.model.User;
-import ru.practicum.utils.UserValidator;
 import ru.practicum.utils.ValidatorService;
 
 import java.util.List;
@@ -28,12 +27,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final UserValidator userValidator = new UserValidator();
     private final ValidatorService validatorService;
 
     @Override
     public UserDto saveUser(NewUserDto newUserDto) {
-        userValidator.validate(newUserDto);
         if (userRepository.findByEmail(newUserDto.getEmail()) != null) {
             throw new ConflictException("Пользователь с email- " + newUserDto.getEmail() +
                     " уже зарегистрирован.");

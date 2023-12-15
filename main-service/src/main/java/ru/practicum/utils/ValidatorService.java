@@ -35,7 +35,7 @@ public class ValidatorService {
     }
 
     public Event existEventById(Long id) {
-        log.info("event");
+        log.info("exist event");
         return eventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Событие с ID- " + id + " не найдено."));
     }

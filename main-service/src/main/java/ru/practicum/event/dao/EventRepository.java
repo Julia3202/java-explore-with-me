@@ -10,17 +10,9 @@ import ru.practicum.event.model.Event;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long>, QuerydslPredicateExecutor<Event> {
-
-    @Query("select min(e.publishedOn) from Event as e where e.id in ?1")
-    Optional<LocalDateTime> getMinPublishedDate(List<Long> eventIdList);
-
-    List<Event> findAllByInitiatorId(Long userId, Pageable pageable);
-
-    List<Event> findAllByCategoryId(Long catId);
 
     @Query("select e " +
             "from Event e " +
@@ -29,6 +21,22 @@ public interface EventRepository extends JpaRepository<Event, Long>, QuerydslPre
             "and (:categories is null or e.category.id in :categories) " +
             "and (e.eventDate between :rangeStart and :rangeEnd))")
     List<Event> findAllByAdmin(@Param("users") List<Long> users, @Param("states") List<String> states,
-                               @Param("categories") List<Long> categories, @Param("rangeStart") String rangeStart,
-                               @Param("rangeEnd") String rangeEnd, Pageable page);
+                               @Param("categories") List<Long> categories, @Param("rangeStart") LocalDateTime rangeStart,
+                               @Param("rangeEnd") LocalDateTime rangeEnd, Pageable page);
+    @Query("select e " +
+            "from Event e " +
+            "where (e.state = 'PUBLISHED') " +
+            "and (lower(e.annotation) like lower(concat('%', :text, '%')) " +
+            "or lower(e.description) like lower(concat('%', :text, '%'))) " +
+            "and ((:categories) is null or e.category.id in :categories) " +
+            "and ((:paid) is null or e.paid = :paid) " +
+            "and (e.eventDate between :rangeStart and :rangeEnd)")
+    List<Event> findAllByPublic(@Param("text") String text,@Param("paid") Boolean paid,
+                                @Param("categories") List<Long> categories,
+                                 @Param("rangeStart") LocalDateTime rangeStart,
+                                @Param("rangeEnd") LocalDateTime rangeEnd);
+
+    List<Event> findAllByInitiatorId(Long userId, Pageable pageable);
+
+    List<Event> findAllByCategoryId(Long id);
 }

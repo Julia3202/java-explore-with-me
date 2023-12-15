@@ -38,7 +38,6 @@ import static ru.practicum.event.model.State.CANCELED;
 import static ru.practicum.event.model.State.PENDING;
 import static ru.practicum.request.model.Status.CONFIRMED;
 import static ru.practicum.request.model.Status.REJECTED;
-import static ru.practicum.utils.Constants.DATE_TIME_FORMATTER;
 
 @Service
 @RequiredArgsConstructor
@@ -58,7 +57,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     @Override
     public EventFullDto create(Long userId, NewEventDto newEventDto) {
         eventValidator.checkForCreateEvent(newEventDto);
-        dateValidator.validStartForUpdate(dateValidator.toTime(newEventDto.getEventDate()));
+        dateValidator.validStartForUpdate(newEventDto.getEventDate());
         User user = validatorService.existUserById(userId);
         Category category = validatorService.existCategoryById(newEventDto.getCategory());
         log.info("get locations");
@@ -87,7 +86,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         if (event.getState().equals(State.PUBLISHED)) {
             throw new ConflictException("Изменять можно события, которые еще не опубликованы или отменены.");
         }
-        LocalDateTime eventDateTime = LocalDateTime.parse(eventDto.getEventDate(), DATE_TIME_FORMATTER);
+        LocalDateTime eventDateTime = eventDto.getEventDate();
         if (LocalDateTime.now().plusHours(2).isAfter(eventDateTime)) {
             throw new ConflictException("Дата и время на которые намечено событие не может быть раньше, чем " +
                     "через два часа от текущего момента.");
@@ -182,16 +181,12 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     @Transactional(readOnly = true)
     public List<EventShortDto> getPrivateEvents(Long userId, Integer from, Integer size) {
         validatorService.existUserById(userId);
-        if (from == null) {
-            from = 0;
-        }
-        if (size == null) {
-            size = 10;
-        }
         validatorService.validSizeAndFrom(from, size);
         Pageable pageable = PageRequest.of(from / size, size);
         List<Event> events = eventRepository.findAllByInitiatorId(userId, pageable);
-        return null;
+        return events.stream()
+                .map(EVENT_MAPPER::toShortDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -202,7 +197,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         if (!event.getInitiator().equals(user)) {
             throw new ConflictException("Пользователь с ID-" + userId + " не является создателем события.");
         }
-        return null;
+        return EVENT_MAPPER.toFullDto(event);
     }
 
     @Override

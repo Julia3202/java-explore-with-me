@@ -1,6 +1,7 @@
 package ru.practicum.event.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -12,11 +13,11 @@ import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.UpdateEventAdminRequest;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.State;
+import ru.practicum.exception.ConflictException;
 import ru.practicum.location.dao.LocationRepository;
 import ru.practicum.location.dto.LocationMapper;
 import ru.practicum.location.model.Location;
 import ru.practicum.request.dao.RequestRepository;
-import ru.practicum.request.model.StateAction;
 import ru.practicum.utils.DateValidator;
 import ru.practicum.utils.EventValidator;
 import ru.practicum.utils.LocationValidator;
@@ -29,11 +30,11 @@ import java.util.stream.Collectors;
 
 import static ru.practicum.event.dto.EventMapper.EVENT_MAPPER;
 import static ru.practicum.request.model.Status.CONFIRMED;
-import static ru.practicum.utils.Constants.DATE_TIME_FORMATTER;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class AdminEventServiceImpl implements AdminEventService {
     private final EventRepository eventRepository;
     private final RequestRepository requestRepository;
@@ -47,22 +48,20 @@ public class AdminEventServiceImpl implements AdminEventService {
     @Override
     @Transactional(readOnly = true)
     public List<EventFullDto> getAdminFullEvent(List<Long> users, List<String> states, List<Long> categories,
-                                                String rangeStart, String rangeEnd, Integer from, Integer size) {
+                                                LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
         if (rangeStart == null) {
-            rangeStart = LocalDateTime.now().format(DATE_TIME_FORMATTER);
+            rangeStart = LocalDateTime.now();
         }
         if (rangeEnd == null) {
-            rangeEnd = LocalDateTime.now().plusWeeks(4).format(DATE_TIME_FORMATTER);
+            rangeEnd = LocalDateTime.now().plusWeeks(4);
         }
-        LocalDateTime start = dateValidator.toTime(rangeStart);
-        LocalDateTime end = dateValidator.toTime(rangeEnd);
-        dateValidator.validTime(start, end);
+        dateValidator.validTime(rangeStart, rangeEnd);
         Pageable page = PageRequest.of(from / size, size);
         List<Event> events = eventRepository.findAllByAdmin(users, states, categories, rangeStart, rangeEnd, page);
         List<String> eventUrls = events.stream()
                 .map(event -> "/events/" + event.getId())
                 .collect(Collectors.toList());
-        List<ViewStatsDto> viewStatsDtos = statClient.getStats(start, end, eventUrls, true);
+        List<ViewStatsDto> viewStatsDtos = statClient.getStats(rangeStart, rangeEnd, eventUrls, true);
         return events.stream()
                 .map(EVENT_MAPPER::toFullDto)
                 .peek(eventFullDto -> {
@@ -76,10 +75,16 @@ public class AdminEventServiceImpl implements AdminEventService {
     }
 
     @Override
-    public EventFullDto updateFromAdminEvent(long eventId, UpdateEventAdminRequest eventDto) {
+    public EventFullDto updateFromAdminEvent(Long eventId, UpdateEventAdminRequest eventDto) {
+
         Event event = validatorService.existEventById(eventId);
         validatorService.existCategoryById(eventDto.getCategory());
-        dateValidator.validStartForUpdate(event.getEventDate());
+        //  dateValidator.validStartForUpdate(event.getEventDate());
+        if (eventDto.getEventDate() != null
+                && LocalDateTime.now().plusHours(1).isAfter(eventDto.getEventDate())) {
+            throw new ConflictException("The date and time for which the event is scheduled cannot be earlier than " +
+                    "one hour from the current moment.");
+        }
         if (eventDto.getStateAction() != null) {
             eventValidator.validStateForUpdate(eventDto, event);
         }
@@ -90,22 +95,24 @@ public class AdminEventServiceImpl implements AdminEventService {
             locationValidator.validLocation(eventDto.getLocation().getLat(), eventDto.getLocation().getLon());
             Location location = locationRepository.save(LocationMapper.toLocation(eventDto.getLocation()));
             event.setLocation(location);
+            log.info("save location {}", location);
         }
-        //check location
         Optional.ofNullable(eventDto.getTitle()).ifPresent(event::setTitle);
         Optional.ofNullable(eventDto.getAnnotation()).ifPresent(event::setAnnotation);
         Optional.ofNullable(eventDto.getDescription()).ifPresent(event::setDescription);
-        Optional.ofNullable(dateValidator.toTime(eventDto.getEventDate())).ifPresent(event::setEventDate);
+        Optional.ofNullable(eventDto.getEventDate()).ifPresent(event::setEventDate);
         Optional.ofNullable(eventDto.getParticipantLimit()).ifPresent(event::setParticipantLimit);
         Optional.ofNullable(eventDto.getPaid()).ifPresent(event::setPaid);
         Optional.ofNullable(eventDto.getRequestModeration()).ifPresent(event::setRequestModeration);
         if (eventDto.getStateAction() != null) {
-            if (eventDto.getStateAction().equals(StateAction.PUBLISH_EVENT)) {
-                event.setState(State.PUBLISHED);
-                event.setPublishedOn(LocalDateTime.now());
-            }
-            if (eventDto.getStateAction().equals(StateAction.REJECT_EVENT)) {
-                event.setState(State.CANCELED);
+            switch (eventDto.getStateAction()) {
+                case PUBLISH_EVENT:
+                    event.setState(State.PUBLISHED);
+                    event.setPublishedOn(LocalDateTime.now());
+                    break;
+                case REJECT_EVENT:
+                    event.setState(State.CANCELED);
+                    break;
             }
         }
         Event eventFromRepository = eventRepository.save(event);

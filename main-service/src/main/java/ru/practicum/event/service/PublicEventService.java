@@ -5,6 +5,7 @@ import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.utils.SorterEvent;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PublicEventService {
@@ -12,7 +13,7 @@ public interface PublicEventService {
     EventFullDto getPublicEvent(Long id, HttpServletRequest httpServletRequest);
 
     List<EventShortDto> getPublicEventList(String text, List<Long> categories, Boolean paid,
-                                           String rangeStart, String rangeEnd,
+                                           LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                            Boolean onlyAvailable, SorterEvent sort, Integer from,
                                            Integer size, HttpServletRequest httpServletRequest);
 }

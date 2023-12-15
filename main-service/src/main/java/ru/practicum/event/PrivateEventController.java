@@ -46,11 +46,14 @@ public class PrivateEventController {
     @GetMapping
     public List<EventShortDto> getEvent(@PathVariable Long userId, @RequestParam(defaultValue = "0") Integer from,
                                         @RequestParam(defaultValue = "10") Integer size) {
+        log.info("Поступил запрос на получение списка событий, добавленных пользователем с id={}", userId);
         return eventService.getPrivateEvents(userId, from, size);
     }
 
     @GetMapping("/{eventId}")
     public EventFullDto getOwnerEvent(@PathVariable Long userId, @PathVariable Long eventId) {
+        log.info("Поступил запрос на получения списка запросов на участие в событии с id={}, " +
+                "от пользователя с id={}", userId, eventId);
         return eventService.getOwnerEvent(userId, eventId);
     }
 
