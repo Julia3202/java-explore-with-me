@@ -23,6 +23,7 @@ public interface EventRepository extends JpaRepository<Event, Long>, QuerydslPre
     List<Event> findAllByAdmin(@Param("users") List<Long> users, @Param("states") List<String> states,
                                @Param("categories") List<Long> categories, @Param("rangeStart") LocalDateTime rangeStart,
                                @Param("rangeEnd") LocalDateTime rangeEnd, Pageable page);
+
     @Query("select e " +
             "from Event e " +
             "where (e.state = 'PUBLISHED') " +
@@ -31,9 +32,9 @@ public interface EventRepository extends JpaRepository<Event, Long>, QuerydslPre
             "and ((:categories) is null or e.category.id in :categories) " +
             "and ((:paid) is null or e.paid = :paid) " +
             "and (e.eventDate between :rangeStart and :rangeEnd)")
-    List<Event> findAllByPublic(@Param("text") String text,@Param("paid") Boolean paid,
+    List<Event> findAllByPublic(@Param("text") String text, @Param("paid") Boolean paid,
                                 @Param("categories") List<Long> categories,
-                                 @Param("rangeStart") LocalDateTime rangeStart,
+                                @Param("rangeStart") LocalDateTime rangeStart,
                                 @Param("rangeEnd") LocalDateTime rangeEnd);
 
     List<Event> findAllByInitiatorId(Long userId, Pageable pageable);
