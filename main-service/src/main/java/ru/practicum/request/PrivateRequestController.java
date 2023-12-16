@@ -21,22 +21,22 @@ public class PrivateRequestController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ParticipationRequestDto postParticipantRequest(@PathVariable long userId,
-                                                          @RequestParam long eventId) {
+    public ParticipationRequestDto postParticipantRequest(@PathVariable Long userId,
+                                                          @RequestParam Long eventId) {
         log.info("Поступил запрос на добавление заявки на участие в событии с id={}, от пользователя с id={}",
                 eventId, userId);
         return requestService.create(userId, eventId);
     }
 
     @PatchMapping("/{requestId}/cancel")
-    public ParticipationRequestDto patchRequestCancel(@PathVariable long userId,
-                                                      @PathVariable long requestId) {
+    public ParticipationRequestDto patchRequestCancel(@PathVariable Long userId,
+                                                      @PathVariable Long requestId) {
         return requestService.update(userId, requestId);
     }
 
     @GetMapping
     @Transactional(readOnly = true)
-    public List<ParticipationRequestDto> getUsersParticipantsRequests(@PathVariable long userId) {
+    public List<ParticipationRequestDto> getUsersParticipantsRequests(@PathVariable Long userId) {
         return requestService.get(userId);
     }
 }

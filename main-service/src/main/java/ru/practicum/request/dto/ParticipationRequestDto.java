@@ -9,7 +9,7 @@ import lombok.*;
 @ToString
 public class ParticipationRequestDto {
 
-    private long id;
+    private Long id;
 
     private String created;
 

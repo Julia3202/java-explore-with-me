@@ -1,6 +1,7 @@
 package ru.practicum.compilation.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import static ru.practicum.compilation.dto.CompilationMapper.COMPILATION_MAPPER;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class CompilationServiceImpl implements CompilationService {
     private final CompilationRepository compilationRepository;
     private final EventRepository eventRepository;
@@ -48,12 +50,34 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto update(Long id, UpdateCompilationDto updateCompilationDto) {
         Compilation compilation = validatorService.existCompilationById(id);
         if (updateCompilationDto.getEventIdList() != null) {
+            List<Event> eventList = eventRepository.findAllById(updateCompilationDto.getEventIdList());
+            log.info("!" +
+                    "!" +
+                    "!" +
+                    "!" +
+                    "!" +
+                    "!" +
+                    "!" +
+                    "!" +
+                    "!" +
+                    "!" +
+                    "!" +
+                    "!" +
+                    "!" +
+                    "!" +
+                    "!" +
+                    "!" +
+                    "!" +
+                    "!" +
+                    "!" +
+                    "!" +
+                    "!" +
+                    "!" +
+                    "find eventList and size evenList = {}", eventList.size());
             compilation.setEvents(eventRepository.findAllById(updateCompilationDto.getEventIdList()));
         }
-
         Optional.ofNullable(updateCompilationDto.getTitle()).ifPresent(compilation::setTitle);
         Optional.ofNullable(updateCompilationDto.getPinned()).ifPresent(compilation::setPinned);
-
         return COMPILATION_MAPPER.toCompilationDto(compilation);
     }
 

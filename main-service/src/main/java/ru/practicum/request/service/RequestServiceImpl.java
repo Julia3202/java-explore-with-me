@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.event.model.Event;
 import ru.practicum.exception.ConflictException;
-import ru.practicum.exception.ValidationException;
+import ru.practicum.exception.NotFoundException;
 import ru.practicum.request.dao.RequestRepository;
 import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.request.dto.RequestMapper;
@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static ru.practicum.event.model.State.PUBLISHED;
+import static ru.practicum.request.model.Status.*;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -33,31 +36,30 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public ParticipationRequestDto create(Long userId, Long eventId) {
         User user = validatorService.existUserById(userId);
-        if (eventId == null) {
-            throw new ValidationException("Не указан ID события.");
-        }
         Event event = validatorService.existEventById(eventId);
-        Optional<Request> requestList = requestRepository.findAllByRequesterAndEvent(userId, eventId);
-        if (requestList.isPresent()) {
-            throw new ConflictException("Пользователь с email- " + user.getEmail() + " уже зарегистрирован.");
-        }
         if (event.getInitiator().equals(user)) {
-            throw new ConflictException("Нельзя делать запрос на мероприятие, которое создали Вы сами.");
+            throw new ConflictException("The event initiator cannot apply to participate in his own event.");
         }
-        if (event.getPublishedOn() == null) {
-            throw new ConflictException("Мероятие не зарегистрировано.");
+        if (!event.getState().equals(PUBLISHED)) {
+            throw new ConflictException("Unable to participate in an unpublished event.");
         }
         Integer participantsNumber = requestRepository.countAllByStatusAndEventId(Status.CONFIRMED, eventId);
-        if (participantsNumber != null && participantsNumber >= event.getParticipantLimit() &&
-                event.getParticipantLimit() != 0) {
-            throw new ConflictException("На мероприятие с ID: " + eventId + ", уже зарегистрировано" +
-                    " максимальное кол-во участников");
+
+        if (participantsNumber != null && participantsNumber >= event.getParticipantLimit() && event.getParticipantLimit() != 0) {
+            throw new ConflictException("На мероприятие с ID: " + eventId + ", уже зарегистрировано максимальное кол-во участников");
         }
-        Request request = new Request(null, LocalDateTime.now(), event, user, Status.PENDING);
-        if (eventValidator.checkRestriction(event)) {
-            request.setStatus(Status.CONFIRMED);
+        Optional<Request> optionalEvent = requestRepository.findByRequesterIdAndEventId(userId, eventId);
+        if (optionalEvent.isPresent()) {
+            throw new ConflictException("Запрос от пользователя с ID: " + userId +
+                    ", на мероприятие с ID: " + eventId + "уже зарегистрирован");
         }
-        Request requestFromRepository = requestRepository.save(request);
+        Request participationRequest = new Request();
+        participationRequest.setCreated(LocalDateTime.now());
+        participationRequest.setEvent(event);
+        participationRequest.setRequester(user);
+        participationRequest.setStatus(
+                event.getRequestModeration() && !event.getParticipantLimit().equals(0) ? PENDING : CONFIRMED);
+        Request requestFromRepository = requestRepository.save(participationRequest);
         return RequestMapper.toDto(requestFromRepository);
     }
 
@@ -65,8 +67,13 @@ public class RequestServiceImpl implements RequestService {
     public ParticipationRequestDto update(Long userId, Long requestId) {
         User user = validatorService.existUserById(userId);
         Request request = validatorService.existRequestById(requestId);
-        requestValidator.existRequester(request, user);
-        request.setStatus(Status.CANCELED);
+        if (!request.getRequester().getId().equals(userId)) {
+            throw new NotFoundException("Request id=" + requestId + " not found.");
+        }
+        if (request.getStatus().equals(CONFIRMED)) {
+            throw new ConflictException("Unable to cancel confirmed request.");
+        }
+        request.setStatus(CANCELED);
         Request requestFromRepository = requestRepository.save(request);
         return RequestMapper.toDto(requestFromRepository);
     }

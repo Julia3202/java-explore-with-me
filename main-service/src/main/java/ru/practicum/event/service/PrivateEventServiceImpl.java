@@ -134,7 +134,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         validatorService.existUserById(userId);
         Long confirmedReq = requestRepository.countByEventIdAndStatus(eventId, CONFIRMED);
         if (event.getParticipantLimit() != 0 && event.getParticipantLimit() <= confirmedReq) {
-            throw new ValidationException("нельзя подтвердить заявку, если уже достигнут лимит по заявкам на данное событие.");
+            throw new ConflictException("нельзя подтвердить заявку, если уже достигнут лимит по заявкам на данное событие.");
         }
         List<Request> requestList = requestRepository
                 .findAllByIdIn(eventRequest.getRequestIds());

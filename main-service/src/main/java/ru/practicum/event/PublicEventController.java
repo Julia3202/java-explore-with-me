@@ -27,7 +27,7 @@ public class PublicEventController {
     }
 
     @GetMapping
-    public List<EventShortDto> getPublicEventList(@RequestParam(required = false) String text,
+    public List<EventShortDto> getPublicEventList(@RequestParam(required = false, defaultValue = "") String text,
                                                   @RequestParam(required = false) List<Long> categories,
                                                   @RequestParam(required = false) Boolean paid,
                                                   @RequestParam(required = false)
