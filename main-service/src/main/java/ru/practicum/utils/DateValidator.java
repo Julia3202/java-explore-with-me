@@ -1,7 +1,6 @@
 package ru.practicum.utils;
 
 import org.apache.commons.lang3.StringUtils;
-import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.ValidationException;
 
 import java.time.LocalDateTime;
@@ -28,7 +27,7 @@ public class DateValidator {
 
     public void validStartForUpdate(LocalDateTime time) {
         if (time != null && time.isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new ConflictException("Нельзя вносить изменения в событие, т.к. до него осталось меньше часа.");
+            throw new ValidationException("Нельзя вносить изменения в событие, т.к. до него осталось меньше часа.");
         }
     }
 }

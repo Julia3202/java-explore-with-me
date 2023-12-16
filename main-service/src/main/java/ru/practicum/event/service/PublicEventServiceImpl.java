@@ -116,6 +116,7 @@ public class PublicEventServiceImpl implements PublicEventService {
 
         int toIndex = Math.min(from + size, shortDtos.size());
         return shortDtos.subList(from, toIndex);
+
     }
 
 

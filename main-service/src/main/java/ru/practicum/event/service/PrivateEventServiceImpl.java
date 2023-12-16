@@ -13,6 +13,7 @@ import ru.practicum.event.model.Event;
 import ru.practicum.event.model.State;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
+import ru.practicum.exception.ValidationException;
 import ru.practicum.location.dao.LocationRepository;
 import ru.practicum.location.dto.LocationMapper;
 import ru.practicum.location.model.Location;
@@ -88,7 +89,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         }
         LocalDateTime eventDateTime = eventDto.getEventDate();
         if (LocalDateTime.now().plusHours(2).isAfter(eventDateTime)) {
-            throw new ConflictException("Дата и время на которые намечено событие не может быть раньше, чем " +
+            throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, чем " +
                     "через два часа от текущего момента.");
         }
         if (!(event.getState().equals(CANCELED) ||
@@ -131,9 +132,9 @@ public class PrivateEventServiceImpl implements PrivateEventService {
                                                                        EventRequestStatusUpdateRequest eventRequest) {
         Event event = validatorService.existEventById(eventId);
         validatorService.existUserById(userId);
-        long confirmedReq = requestRepository.countByEventIdAndStatus(eventId, CONFIRMED);
+        Long confirmedReq = requestRepository.countByEventIdAndStatus(eventId, CONFIRMED);
         if (event.getParticipantLimit() != 0 && event.getParticipantLimit() <= confirmedReq) {
-            throw new ConflictException("нельзя подтвердить заявку, если уже достигнут лимит по заявкам на данное событие.");
+            throw new ValidationException("нельзя подтвердить заявку, если уже достигнут лимит по заявкам на данное событие.");
         }
         List<Request> requestList = requestRepository
                 .findAllByIdIn(eventRequest.getRequestIds());

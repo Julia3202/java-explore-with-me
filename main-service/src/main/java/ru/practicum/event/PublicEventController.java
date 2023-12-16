@@ -20,10 +20,10 @@ import java.util.List;
 public class PublicEventController {
     private final PublicEventService publicEventService;
 
-    @GetMapping("/{id}")
-    public EventFullDto getPublicEvent(@PathVariable Long id, HttpServletRequest httpServletRequest) {
-        log.info("Поступил запрос на получение информации о событии с id={}", id);
-        return publicEventService.getPublicEvent(id, httpServletRequest);
+    @GetMapping("/{eventId}")
+    public EventFullDto getPublicEvent(@PathVariable Long eventId, HttpServletRequest httpServletRequest) {
+        log.info("Поступил запрос на получение информации о событии с id={}", eventId);
+        return publicEventService.getPublicEvent(eventId, httpServletRequest);
     }
 
     @GetMapping
@@ -31,9 +31,9 @@ public class PublicEventController {
                                                   @RequestParam(required = false) List<Long> categories,
                                                   @RequestParam(required = false) Boolean paid,
                                                   @RequestParam(required = false)
-                                                      @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
+                                                  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
                                                   @RequestParam(required = false)
-                                                      @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
+                                                  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
                                                   @RequestParam(required = false) Boolean onlyAvailable,
                                                   @RequestParam(required = false) SorterEvent sort,
                                                   @RequestParam(defaultValue = "0") Integer from,
