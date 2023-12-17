@@ -49,18 +49,15 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public CompilationDto update(Long compId, UpdateCompilationRequest updateCompilationRequest) {
         Compilation compilation = validatorService.existCompilationById(compId);
-        log.info("!!!!!!!!!!!!!Compilation check");
-        log.info("Compilation event = {}", updateCompilationRequest.getEventIdList());
-        if (updateCompilationRequest.getEventIdList() != null) {
-            List<Event> eventList = eventRepository.findAllById(updateCompilationRequest.getEventIdList());
-            log.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" +
-                    "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!size eventList = {}", eventList.size());
-
+        log.info("Compilation event = {}", updateCompilationRequest.getEvents());
+        if (updateCompilationRequest.getEvents() != null) {
+            List<Event> eventList = eventRepository.findAllById(updateCompilationRequest.getEvents());
             compilation.setEvents(eventList);
         }
         Optional.ofNullable(updateCompilationRequest.getTitle()).ifPresent(compilation::setTitle);
         Optional.ofNullable(updateCompilationRequest.getPinned()).ifPresent(compilation::setPinned);
         Compilation compilationFromRepository = compilationRepository.save(compilation);
+        log.info("compilationFromRepository: {}", compilationFromRepository);
         return COMPILATION_MAPPER.toCompilationDto(compilationFromRepository);
     }
 
