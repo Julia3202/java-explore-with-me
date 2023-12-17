@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.compilation.dao.CompilationRepository;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.NewCompilationDto;
-import ru.practicum.compilation.dto.UpdateCompilationDto;
+import ru.practicum.compilation.dto.UpdateCompilationRequest;
 import ru.practicum.compilation.model.Compilation;
 import ru.practicum.event.dao.EventRepository;
 import ru.practicum.event.model.Event;
@@ -47,38 +47,21 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
-    public CompilationDto update(Long id, UpdateCompilationDto updateCompilationDto) {
-        Compilation compilation = validatorService.existCompilationById(id);
-        if (updateCompilationDto.getEventIdList() != null) {
-            List<Event> eventList = eventRepository.findAllById(updateCompilationDto.getEventIdList());
-            log.info("!" +
-                    "!" +
-                    "!" +
-                    "!" +
-                    "!" +
-                    "!" +
-                    "!" +
-                    "!" +
-                    "!" +
-                    "!" +
-                    "!" +
-                    "!" +
-                    "!" +
-                    "!" +
-                    "!" +
-                    "!" +
-                    "!" +
-                    "!" +
-                    "!" +
-                    "!" +
-                    "!" +
-                    "!" +
-                    "find eventList and size evenList = {}", eventList.size());
-            compilation.setEvents(eventRepository.findAllById(updateCompilationDto.getEventIdList()));
+    public CompilationDto update(Long compId, UpdateCompilationRequest updateCompilationRequest) {
+        Compilation compilation = validatorService.existCompilationById(compId);
+        log.info("!!!!!!!!!!!!!Compilation check");
+        log.info("Compilation event = {}", updateCompilationRequest.getEventIdList());
+        if (updateCompilationRequest.getEventIdList() != null) {
+            List<Event> eventList = eventRepository.findAllById(updateCompilationRequest.getEventIdList());
+            log.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" +
+                    "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!size eventList = {}", eventList.size());
+
+            compilation.setEvents(eventList);
         }
-        Optional.ofNullable(updateCompilationDto.getTitle()).ifPresent(compilation::setTitle);
-        Optional.ofNullable(updateCompilationDto.getPinned()).ifPresent(compilation::setPinned);
-        return COMPILATION_MAPPER.toCompilationDto(compilation);
+        Optional.ofNullable(updateCompilationRequest.getTitle()).ifPresent(compilation::setTitle);
+        Optional.ofNullable(updateCompilationRequest.getPinned()).ifPresent(compilation::setPinned);
+        Compilation compilationFromRepository = compilationRepository.save(compilation);
+        return COMPILATION_MAPPER.toCompilationDto(compilationFromRepository);
     }
 
     @Override

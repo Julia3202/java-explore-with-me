@@ -1,11 +1,12 @@
 package ru.practicum.compilation;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.NewCompilationDto;
-import ru.practicum.compilation.dto.UpdateCompilationDto;
+import ru.practicum.compilation.dto.UpdateCompilationRequest;
 import ru.practicum.compilation.service.CompilationService;
 
 import javax.validation.Valid;
@@ -13,6 +14,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/admin/compilations")
 @RequiredArgsConstructor
+@Slf4j
 public class AdminCompilationController {
     private final CompilationService compilationService;
 
@@ -24,7 +26,8 @@ public class AdminCompilationController {
 
     @PatchMapping("/{compId}")
     public CompilationDto update(@PathVariable Long compId,
-                                 @Valid @RequestBody UpdateCompilationDto updateCompilationDto) {
+                                 @Valid @RequestBody UpdateCompilationRequest updateCompilationDto) {
+        log.info("Поступил запрос на изменение подборки с id={}, updateCompilation={}", compId, updateCompilationDto);
         return compilationService.update(compId, updateCompilationDto);
     }
 

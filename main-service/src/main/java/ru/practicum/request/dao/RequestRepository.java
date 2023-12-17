@@ -1,10 +1,9 @@
 package ru.practicum.request.dao;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ru.practicum.request.model.Request;
-import ru.practicum.request.model.Status;
+import ru.practicum.utils.Status;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,12 +19,6 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     Integer countAllByStatusAndEventId(Status status, Long id);
 
     List<Request> findAllByIdIn(List<Long> requestIds);
-
-    List<Request> findAllByEventIdAndStatus(Long id, Status status);
-
-    @Query("update Request as r set r.status = ?1 where r.id in ?2")
-    void requestStatusUpdate(Status status, List<Long> requestsIdsForConfirm);
-
 
     Long countByEventIdAndStatus(Long eventId, Status status);
 

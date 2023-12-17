@@ -10,7 +10,6 @@ import ru.practicum.category.model.Category;
 import ru.practicum.event.dao.EventRepository;
 import ru.practicum.event.dto.*;
 import ru.practicum.event.model.Event;
-import ru.practicum.event.model.State;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.ValidationException;
@@ -21,12 +20,8 @@ import ru.practicum.request.dao.RequestRepository;
 import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.request.dto.RequestMapper;
 import ru.practicum.request.model.Request;
-import ru.practicum.request.model.Status;
 import ru.practicum.user.model.User;
-import ru.practicum.utils.DateValidator;
-import ru.practicum.utils.EventValidator;
-import ru.practicum.utils.LocationValidator;
-import ru.practicum.utils.ValidatorService;
+import ru.practicum.utils.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -35,10 +30,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ru.practicum.event.dto.EventMapper.EVENT_MAPPER;
-import static ru.practicum.event.model.State.CANCELED;
-import static ru.practicum.event.model.State.PENDING;
-import static ru.practicum.request.model.Status.CONFIRMED;
-import static ru.practicum.request.model.Status.REJECTED;
+import static ru.practicum.utils.State.CANCELED;
+import static ru.practicum.utils.State.PENDING;
+import static ru.practicum.utils.Status.CONFIRMED;
+import static ru.practicum.utils.Status.REJECTED;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +43,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     private final EventRepository eventRepository;
     private final ValidatorService validatorService;
     private final LocationRepository locationRepository;
-    private final EventUtilService eventUtilService;
     private final RequestRepository requestRepository;
     private final DateValidator dateValidator = new DateValidator();
 
@@ -61,9 +55,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         dateValidator.validStartForUpdate(newEventDto.getEventDate());
         User user = validatorService.existUserById(userId);
         Category category = validatorService.existCategoryById(newEventDto.getCategory());
-        log.info("get locations");
         Location locations = LocationMapper.toLocation(newEventDto.getLocation());
-        log.info("save location");
         Location location = locationRepository.save(locations);
         Event event = EVENT_MAPPER.fromDto(newEventDto, category, location);
         event.setInitiator(user);
@@ -73,7 +65,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         event.setRequestModeration(newEventDto.getRequestModeration() == null || newEventDto.getRequestModeration());
         event.setState(PENDING);
         eventRepository.save(event);
-        log.info("save event for repository");
         return EVENT_MAPPER.toFullDto(eventRepository.save(event));
     }
 
@@ -87,10 +78,12 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         if (event.getState().equals(State.PUBLISHED)) {
             throw new ConflictException("Изменять можно события, которые еще не опубликованы или отменены.");
         }
-        LocalDateTime eventDateTime = eventDto.getEventDate();
-        if (LocalDateTime.now().plusHours(2).isAfter(eventDateTime)) {
-            throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, чем " +
-                    "через два часа от текущего момента.");
+        if (eventDto.getEventDate() != null) {
+            LocalDateTime eventDateTime = eventDto.getEventDate();
+            if (LocalDateTime.now().plusHours(2).isAfter(eventDateTime)) {
+                throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, чем " +
+                        "через два часа от текущего момента.");
+            }
         }
         if (!(event.getState().equals(CANCELED) ||
                 event.getState().equals(PENDING))) {
@@ -105,17 +98,15 @@ public class PrivateEventServiceImpl implements PrivateEventService {
             Location location = locationRepository.save(locations);
             event.setLocation(location);
         }
-
         Optional.ofNullable(eventDto.getTitle()).ifPresent(event::setTitle);
         Optional.ofNullable(eventDto.getAnnotation()).ifPresent(event::setAnnotation);
         Optional.ofNullable(eventDto.getDescription()).ifPresent(event::setDescription);
-        Optional.ofNullable(eventDateTime).ifPresent(event::setEventDate);
+        Optional.ofNullable(eventDto.getEventDate()).ifPresent(event::setEventDate);
         Optional.ofNullable(eventDto.getParticipantLimit()).ifPresent(event::setParticipantLimit);
         Optional.ofNullable(eventDto.getPaid()).ifPresent(event::setPaid);
         Optional.ofNullable(eventDto.getRequestModeration()).ifPresent(event::setRequestModeration);
-
         if (eventDto.getStateAction() != null) {
-            switch (eventDto.getStateAction()) {
+            switch (StateUserAction.valueOf(eventDto.getStateAction())) {
                 case SEND_TO_REVIEW:
                     event.setState(State.PENDING);
                     break;

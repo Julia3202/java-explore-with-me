@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.UpdateEventAdminRequest;
 import ru.practicum.event.service.AdminEventService;
+import ru.practicum.utils.State;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
@@ -21,7 +22,7 @@ public class AdminEventController {
 
     @GetMapping
     public List<EventFullDto> getFullEvent(@RequestParam(required = false) List<Long> users,
-                                           @RequestParam(required = false) List<String> states,
+                                           @RequestParam(required = false) List<State> states,
                                            @RequestParam(required = false) List<Long> categories,
                                            @RequestParam(required = false)
                                                @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,

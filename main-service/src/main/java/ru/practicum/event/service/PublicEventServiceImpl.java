@@ -1,8 +1,7 @@
 package ru.practicum.event.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.EndpointHitDto;
@@ -12,11 +11,11 @@ import ru.practicum.event.dao.EventRepository;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.model.Event;
-import ru.practicum.event.model.State;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.request.dao.RequestRepository;
 import ru.practicum.utils.DateValidator;
 import ru.practicum.utils.SorterEvent;
+import ru.practicum.utils.State;
 import ru.practicum.utils.ValidatorService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,12 +27,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ru.practicum.event.dto.EventMapper.EVENT_MAPPER;
-import static ru.practicum.request.model.Status.CONFIRMED;
 import static ru.practicum.utils.Constants.DATE_TIME_FORMATTER;
+import static ru.practicum.utils.Status.CONFIRMED;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class PublicEventServiceImpl implements PublicEventService {
     private final EventRepository eventRepository;
     private final ValidatorService validatorService;
@@ -64,7 +64,7 @@ public class PublicEventServiceImpl implements PublicEventService {
     @Override
     public List<EventShortDto> getPublicEventList(String text, List<Long> categories, Boolean paid,
                                                   LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                                  Boolean onlyAvailable, SorterEvent sort, Integer from,
+                                                  Boolean onlyAvailable, String sort, Integer from,
                                                   Integer size, HttpServletRequest httpServletRequest) {
         if (categories != null && categories.size() == 1 && categories.get(0).equals(0L)) {
             categories = null;
@@ -73,10 +73,9 @@ public class PublicEventServiceImpl implements PublicEventService {
             rangeStart = LocalDateTime.now();
         }
         if (rangeEnd == null) {
-            rangeStart = LocalDateTime.now().plusYears(100);
+            rangeEnd = LocalDateTime.now().plusYears(100);
         }
-        //   dateValidator.validTime(rangeStart, rangeEnd);
-        Pageable page = PageRequest.of(from / size, size);
+        dateValidator.validTime(rangeStart, rangeEnd);
         List<Event> events = eventRepository.findAllByPublic(text, paid, categories, rangeStart, rangeEnd);
         if (onlyAvailable) {
             events = events.stream()
@@ -99,7 +98,7 @@ public class PublicEventServiceImpl implements PublicEventService {
                 }).peek(dto -> dto.setConfirmedRequests(
                         requestRepository.countByEventIdAndStatus(dto.getId(), CONFIRMED)))
                 .collect(Collectors.toList());
-        switch (sort) {
+        switch (SorterEvent.valueOf(sort)) {
             case EVENT_DATE:
                 shortDtos.sort(Comparator.comparing(EventShortDto::getEventDate));
                 break;
@@ -113,11 +112,7 @@ public class PublicEventServiceImpl implements PublicEventService {
         if (from >= shortDtos.size()) {
             return Collections.emptyList();
         }
-
         int toIndex = Math.min(from + size, shortDtos.size());
         return shortDtos.subList(from, toIndex);
-
     }
-
-
 }

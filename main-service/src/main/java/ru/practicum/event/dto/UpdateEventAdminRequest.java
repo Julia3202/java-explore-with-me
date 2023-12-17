@@ -3,7 +3,6 @@ package ru.practicum.event.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import ru.practicum.location.dto.LocationDto;
-import ru.practicum.request.model.StateAction;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Size;
@@ -28,7 +27,7 @@ public class UpdateEventAdminRequest {
     private Boolean paid;
     private Integer participantLimit;
     private Boolean requestModeration;
-    private StateAction stateAction;
+    private String stateAction;
     @Size(min = 3, max = 120, message = "Заголовок должн содержать не менее 3 и не более 120 симоволов")
     private String title;
 }

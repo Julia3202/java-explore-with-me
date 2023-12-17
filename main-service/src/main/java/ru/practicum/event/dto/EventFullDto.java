@@ -31,7 +31,8 @@ public class EventFullDto {
     private LocationDto location;
     private Boolean paid;
     private Integer participantLimit;
-    private String publishedOn;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime publishedOn;
     private Boolean requestModeration;
     private String state;
     @Size(min = 3, max = 120, message = "Заголовок должн содержать не менее 3 и не более 120 симоволов")

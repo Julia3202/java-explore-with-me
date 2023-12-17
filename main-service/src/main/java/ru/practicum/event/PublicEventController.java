@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.service.PublicEventService;
-import ru.practicum.utils.SorterEvent;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -34,8 +33,8 @@ public class PublicEventController {
                                                   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
                                                   @RequestParam(required = false)
                                                   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
-                                                  @RequestParam(required = false) Boolean onlyAvailable,
-                                                  @RequestParam(required = false) SorterEvent sort,
+                                                  @RequestParam(required = false, defaultValue = "false") Boolean onlyAvailable,
+                                                  @RequestParam(required = false, defaultValue = "EVENT_DATE") String sort,
                                                   @RequestParam(defaultValue = "0") Integer from,
                                                   @RequestParam(defaultValue = "10") Integer size,
                                                   HttpServletRequest httpServletRequest) {

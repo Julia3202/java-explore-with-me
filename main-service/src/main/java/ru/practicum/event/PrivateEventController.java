@@ -9,6 +9,7 @@ import ru.practicum.event.dto.*;
 import ru.practicum.event.service.PrivateEventService;
 import ru.practicum.request.dto.ParticipationRequestDto;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -28,7 +29,7 @@ public class PrivateEventController {
 
     @PatchMapping("/{eventId}")
     public EventFullDto update(@PathVariable Long userId, @PathVariable Long eventId,
-                               @RequestBody UpdateEventUserRequest eventDto) {
+                               @Valid @RequestBody UpdateEventUserRequest eventDto) {
         log.info("Поступил запрос на изменение события с id={} от пользователя с id={}, updateData={}",
                 eventId, userId, eventDto);
         return eventService.update(userId, eventId, eventDto);
@@ -36,7 +37,7 @@ public class PrivateEventController {
 
     @PatchMapping("/{eventId}/requests")
     public EventRequestStatusUpdateResult updateRequestForOwner(@PathVariable Long userId, @PathVariable Long eventId,
-                                                                @RequestBody EventRequestStatusUpdateRequest
+                                                                @Valid @RequestBody EventRequestStatusUpdateRequest
                                                                         eventRequest) {
         log.info("Поступил запрос на изменение статуса заявок на участие в событии с id={} " +
                 "от пользователя с id={}, updateRequest={}", eventId, userId, eventRequest);

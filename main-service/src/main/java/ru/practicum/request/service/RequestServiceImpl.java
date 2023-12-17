@@ -10,10 +10,8 @@ import ru.practicum.request.dao.RequestRepository;
 import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.request.dto.RequestMapper;
 import ru.practicum.request.model.Request;
-import ru.practicum.request.model.Status;
 import ru.practicum.user.model.User;
-import ru.practicum.utils.EventValidator;
-import ru.practicum.utils.RequestValidator;
+import ru.practicum.utils.Status;
 import ru.practicum.utils.ValidatorService;
 
 import java.time.LocalDateTime;
@@ -21,8 +19,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static ru.practicum.event.model.State.PUBLISHED;
-import static ru.practicum.request.model.Status.*;
+import static ru.practicum.utils.State.PUBLISHED;
+import static ru.practicum.utils.Status.*;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +28,6 @@ import static ru.practicum.request.model.Status.*;
 public class RequestServiceImpl implements RequestService {
     private final RequestRepository requestRepository;
     private final ValidatorService validatorService;
-    private final EventValidator eventValidator = new EventValidator();
-    private final RequestValidator requestValidator = new RequestValidator();
 
     @Override
     public ParticipationRequestDto create(Long userId, Long eventId) {
@@ -65,7 +61,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public ParticipationRequestDto update(Long userId, Long requestId) {
-        User user = validatorService.existUserById(userId);
+        validatorService.existUserById(userId);
         Request request = validatorService.existRequestById(requestId);
         if (!request.getRequester().getId().equals(userId)) {
             throw new NotFoundException("Request id=" + requestId + " not found.");

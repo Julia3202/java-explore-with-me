@@ -1,6 +1,5 @@
 package ru.practicum.utils;
 
-import org.apache.commons.lang3.StringUtils;
 import ru.practicum.exception.ValidationException;
 
 import java.time.LocalDateTime;
@@ -8,13 +7,6 @@ import java.time.LocalDateTime;
 import static ru.practicum.utils.Constants.DATE_TIME_FORMATTER;
 
 public class DateValidator {
-    public LocalDateTime toTime(String time) {
-        if (StringUtils.isEmpty(time)) {
-            return null;
-        }
-        return LocalDateTime.parse(time, DATE_TIME_FORMATTER);
-    }
-
     public String toStringTime(LocalDateTime time) {
         return time.format(DATE_TIME_FORMATTER);
     }
