@@ -1,21 +1,17 @@
 package ru.practicum.event.service;
 
-import com.querydsl.core.BooleanBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import ru.practicum.ViewStatsDto;
 import ru.practicum.client.StatClient;
 import ru.practicum.event.dao.EventRepository;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.UpdateEventAdminRequest;
 import ru.practicum.event.model.Event;
-import ru.practicum.event.model.QEvent;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.location.dao.LocationRepository;
 import ru.practicum.location.dto.LocationMapper;
@@ -57,15 +53,7 @@ public class AdminEventServiceImpl implements AdminEventService {
             rangeEnd = LocalDateTime.now().plusYears(1);
         }
         Pageable page = PageRequest.of(from / size, size);
-        BooleanBuilder query = new BooleanBuilder()
-                .and(!CollectionUtils.isEmpty(users) ? QEvent.event.initiator.id.in(users) : null)
-                .and(!CollectionUtils.isEmpty(categories) ? QEvent.event.category.id.in(categories) : null)
-                .and(QEvent.event.eventDate.goe(rangeStart))
-                .and(QEvent.event.eventDate.loe(rangeEnd));
-        if (!CollectionUtils.isEmpty(states)) {
-            query.and(QEvent.event.state.in(states));
-        }
-        Page<Event> events = eventRepository.findAll(query, page);
+        List<Event> events = eventRepository.findAllByAdmin(users, states, categories, rangeStart, rangeEnd, page);
         List<String> eventUrls = events.stream()
                 .map(event -> "/events/" + event.getId())
                 .collect(Collectors.toList());
