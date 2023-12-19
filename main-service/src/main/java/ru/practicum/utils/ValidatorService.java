@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.category.dao.CategoryRepository;
-import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.model.Category;
 import ru.practicum.compilation.dao.CompilationRepository;
 import ru.practicum.compilation.model.Compilation;
@@ -55,10 +54,10 @@ public class ValidatorService {
                 .orElseThrow(() -> new NotFoundException("Запрос с ID-" + id + " не найден."));
     }
 
-    public void uniqueName(NewCategoryDto newCategoryDto) {
-        Category category = categoryRepository.findByName(newCategoryDto.getName());
+    public void isUniqueName(String name) {
+        Category category = categoryRepository.findByName(name);
         if (category != null) {
-            throw new ConflictException("Категория с именем-" + newCategoryDto.getName() + " уже создана.");
+            throw new ConflictException("Категория с именем-" + name + " уже создана.");
         }
     }
 

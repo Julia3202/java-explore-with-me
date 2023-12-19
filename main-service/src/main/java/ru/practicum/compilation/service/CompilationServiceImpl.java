@@ -1,11 +1,12 @@
 package ru.practicum.compilation.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import ru.practicum.compilation.dao.CompilationRepository;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.NewCompilationDto;
@@ -13,7 +14,7 @@ import ru.practicum.compilation.dto.UpdateCompilationRequest;
 import ru.practicum.compilation.model.Compilation;
 import ru.practicum.event.dao.EventRepository;
 import ru.practicum.event.model.Event;
-import ru.practicum.utils.CompilationValidator;
+import ru.practicum.exception.ValidationException;
 import ru.practicum.utils.ValidatorService;
 
 import java.util.ArrayList;
@@ -26,18 +27,15 @@ import static ru.practicum.compilation.dto.CompilationMapper.COMPILATION_MAPPER;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@Slf4j
 public class CompilationServiceImpl implements CompilationService {
     private final CompilationRepository compilationRepository;
     private final EventRepository eventRepository;
     private final ValidatorService validatorService;
-    private final CompilationValidator compilationValidator = new CompilationValidator();
 
     @Override
     public CompilationDto create(NewCompilationDto newCompilationDto) {
-        compilationValidator.validateTitle(newCompilationDto);
-        List<Event> events = newCompilationDto.getEvents() != null &&
-                !newCompilationDto.getEvents().isEmpty() ?
+        validateTitle(newCompilationDto.getTitle());
+        List<Event> events = !CollectionUtils.isEmpty(newCompilationDto.getEvents()) ?
                 eventRepository.findAllById(newCompilationDto.getEvents()) : new ArrayList<>();
         if (newCompilationDto.getPinned() == null) {
             newCompilationDto.setPinned(false);
@@ -49,7 +47,6 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public CompilationDto update(Long compId, UpdateCompilationRequest updateCompilationRequest) {
         Compilation compilation = validatorService.existCompilationById(compId);
-        log.info("Compilation event = {}", updateCompilationRequest.getEvents());
         if (updateCompilationRequest.getEvents() != null) {
             List<Event> eventList = eventRepository.findAllById(updateCompilationRequest.getEvents());
             compilation.setEvents(eventList);
@@ -57,7 +54,6 @@ public class CompilationServiceImpl implements CompilationService {
         Optional.ofNullable(updateCompilationRequest.getTitle()).ifPresent(compilation::setTitle);
         Optional.ofNullable(updateCompilationRequest.getPinned()).ifPresent(compilation::setPinned);
         Compilation compilationFromRepository = compilationRepository.save(compilation);
-        log.info("compilationFromRepository: {}", compilationFromRepository);
         return COMPILATION_MAPPER.toCompilationDto(compilationFromRepository);
     }
 
@@ -81,5 +77,14 @@ public class CompilationServiceImpl implements CompilationService {
     public void delete(Long id) {
         Compilation compilation = validatorService.existCompilationById(id);
         compilationRepository.delete(compilation);
+    }
+
+    public static void validateTitle(String title) {
+        if (StringUtils.isBlank(title)) {
+            throw new ValidationException("Поле с названием обязательно к заполнению.");
+        }
+        if (title.length() > 50) {
+            throw new ValidationException("Поле с названием не должно быть длиннее 50 символов.");
+        }
     }
 }

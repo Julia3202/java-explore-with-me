@@ -12,7 +12,6 @@ import ru.practicum.category.model.Category;
 import ru.practicum.event.dao.EventRepository;
 import ru.practicum.event.model.Event;
 import ru.practicum.exception.ConflictException;
-import ru.practicum.utils.CategoryValidator;
 import ru.practicum.utils.ValidatorService;
 
 import java.util.List;
@@ -24,12 +23,10 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final ValidatorService validatorService;
     private final EventRepository eventRepository;
-    private final CategoryValidator categoryValidator = new CategoryValidator();
 
     @Override
     public CategoryDto create(NewCategoryDto newCategoryDto) {
-        categoryValidator.validName(newCategoryDto);
-        validatorService.uniqueName(newCategoryDto);
+        validatorService.isUniqueName(newCategoryDto.getName());
         Category category = CategoryMapper.toCategory(newCategoryDto);
         categoryRepository.save(category);
         return CategoryMapper.toCategoryDto(category);
@@ -52,13 +49,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryDto> getListCategories(Integer from, Integer size) {
-        if (from == null) {
-            from = 0;
-        }
-        if (size == null) {
-            size = 10;
-        }
-        validatorService.validSizeAndFrom(from, size);
         Pageable page = PageRequest.of(from / size, size);
         return categoryRepository.findAll(page).stream()
                 .map(CategoryMapper::toCategoryDto)
@@ -70,7 +60,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = validatorService.existCategoryById(id);
         List<Event> eventList = eventRepository.findAllByCategoryId(id);
         if (!eventList.isEmpty()) {
-            throw new ConflictException("Удаление невозможно,к категории относится " + eventList.size() + " событий.");
+            throw new ConflictException("Удаление невозможно, к категории относится " + eventList.size() + " событий.");
         }
         categoryRepository.delete(category);
     }

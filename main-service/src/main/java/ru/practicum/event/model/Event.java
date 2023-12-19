@@ -22,7 +22,7 @@ public class Event {
     @Column(name = "event_id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 2000)
     private String annotation;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,7 +32,7 @@ public class Event {
     @Column(name = "created_on", nullable = false)
     private LocalDateTime createdOn;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 7000)
     private String description;
 
     @Column(name = "event_date", nullable = false)
@@ -59,7 +59,7 @@ public class Event {
     @Column(length = 10)
     private State state;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 120)
     private String title;
 
     @Column(name = "request_moderation", nullable = false)

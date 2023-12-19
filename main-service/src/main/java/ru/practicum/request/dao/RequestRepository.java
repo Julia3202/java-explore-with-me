@@ -1,18 +1,14 @@
 package ru.practicum.request.dao;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import ru.practicum.request.model.Request;
 import ru.practicum.utils.Status;
 
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface RequestRepository extends JpaRepository<Request, Long> {
     List<Request> findAllByRequesterId(Long id);
-
-    List<Request> findAllByStatusAndEventIdIn(Status status, List<Long> eventsIds);
 
     List<Request> findAllByEventId(Long eventId);
 

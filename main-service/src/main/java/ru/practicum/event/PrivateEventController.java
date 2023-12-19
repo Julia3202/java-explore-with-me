@@ -3,7 +3,6 @@ package ru.practicum.event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.dto.*;
 import ru.practicum.event.service.PrivateEventService;
@@ -15,7 +14,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/users/{userId}/events")
 @RequiredArgsConstructor
-@Validated
 @Slf4j
 public class PrivateEventController {
     private final PrivateEventService eventService;
@@ -60,6 +58,8 @@ public class PrivateEventController {
 
     @GetMapping("/{eventId}/requests")
     public List<ParticipationRequestDto> getRequestForOwnerEvent(@PathVariable Long userId, @PathVariable Long eventId) {
+        log.info("Поступил запрос на получение информации о запросах на участие в событии с ID- {} пользователя с ID- {}",
+                eventId, userId);
         return eventService.getRequestForOwnerEvent(userId, eventId);
     }
 }

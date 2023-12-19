@@ -30,7 +30,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ru.practicum.event.dto.EventMapper.EVENT_MAPPER;
-import static ru.practicum.utils.State.CANCELED;
 import static ru.practicum.utils.State.PENDING;
 import static ru.practicum.utils.Status.CONFIRMED;
 import static ru.practicum.utils.Status.REJECTED;
@@ -75,7 +74,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         if (!event.getInitiator().equals(user)) {
             throw new ConflictException("Пользователь с ID-" + userId + " не является создателем события.");
         }
-        if (event.getState().equals(State.PUBLISHED)) {
+        if (event.getState() == State.PUBLISHED) {
             throw new ConflictException("Изменять можно события, которые еще не опубликованы или отменены.");
         }
         if (eventDto.getEventDate() != null) {
@@ -84,10 +83,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
                 throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, чем " +
                         "через два часа от текущего момента.");
             }
-        }
-        if (!(event.getState().equals(CANCELED) ||
-                event.getState().equals(PENDING))) {
-            throw new ConflictException("Only pending or canceled events can be changed");
         }
         if (eventDto.getCategory() != null) {
             event.setCategory(validatorService.existCategoryById(eventDto.getCategory()));
