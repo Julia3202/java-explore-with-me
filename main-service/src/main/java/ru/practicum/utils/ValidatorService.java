@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.category.dao.CategoryRepository;
 import ru.practicum.category.model.Category;
+import ru.practicum.comment.dao.CommentRepository;
+import ru.practicum.comment.model.Comment;
 import ru.practicum.compilation.dao.CompilationRepository;
 import ru.practicum.compilation.model.Compilation;
 import ru.practicum.event.dao.EventRepository;
@@ -26,15 +28,14 @@ public class ValidatorService {
     private final UserRepository userRepository;
     public final RequestRepository requestRepository;
     private final EventRepository eventRepository;
+    private final CommentRepository commentRepository;
 
     public User existUserById(Long userId) {
-        log.info("user");
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с ID- " + userId + " не найден."));
     }
 
     public Event existEventById(Long id) {
-        log.info("exist event");
         return eventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Событие с ID- " + id + " не найдено."));
     }
@@ -52,6 +53,11 @@ public class ValidatorService {
     public Request existRequestById(Long id) {
         return requestRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Запрос с ID-" + id + " не найден."));
+    }
+
+    public Comment existCommentById(Long comId) {
+        return commentRepository.findById(comId)
+                .orElseThrow(() -> new NotFoundException("Комментарий с ID- " + comId + " не найден."));
     }
 
     public void isUniqueName(String name) {
